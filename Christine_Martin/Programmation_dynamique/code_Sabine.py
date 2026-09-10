@@ -31,7 +31,6 @@ indel = -2
 def lettres_unique(X,Y):  
     """ récupérer les lettres uniques pour créer tableau des scores """
     Lettres_uniques = list(dict.fromkeys(X+Y))
-    print(Lettres_uniques)
     return Lettres_uniques
 
 def Tab_score(Lettres_uniques, match, mismatch, indel):
@@ -55,8 +54,6 @@ def Tab_seq(X,Y):
 
 
 # Partie 2 : Remplir le tableau
-
-
 def Remp_tab(df_score, df_seq) :
     """ Remplir le tableau de séquence 2 étapes : initialisation et les formules """
     # initialisation
@@ -85,16 +82,20 @@ def Remp_tab(df_score, df_seq) :
                 max_matrix[i, j] = (i, j - 1)           
 
     df_max = pd.DataFrame(data=max_matrix, index=df_seq.index, columns=df_seq.columns)
-    print(df_max)
     
-    # Trouver le chemin final
-    
-    Chemin = trouver_chemin(df_max)
-    
-    return df_seq, Chemin
+    return df_seq, df_max
 
 # Partie 2 bis ou 3 : Retrouver le.s chemin.s
+def trad(Etape, df_max):
+    
 
+def find_way(df_max):
+    Etape =[df_max.iloc[-1,-1]]
+
+    while Etape[-1] != (0,0):
+        Etape.append(df_max.iloc[Etape[-1][0],Etape[-1][1]])
+
+    return trad(Etape)
 
 # -----------------------------------------------------------------------------
 #                                      Main 
@@ -112,7 +113,13 @@ print("tableau seq fait")
 #print(df_seq)
 print('---')
 
-df_seq = Remp_tab(df_score, df_seq)
+df_seq,df_max = Remp_tab(df_score, df_seq)
 print("tableau sequence rempli")
-#print(df_seq)
+print(df_seq)
+print('---')
+
+
+Chemin = find_way(df_max)
+print("Voici le chemiin")
+print(Chemin)
 print('---')
