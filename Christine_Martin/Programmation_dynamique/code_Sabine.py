@@ -1,27 +1,27 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 # -----------------------------------------------------------------------------
 #                                      Données 
 # -----------------------------------------------------------------------------
 
 # Séquences
-#X = 'ACCGACTTAGACAGGT'
-#Y = 'TTACCGACGTATACAGCGTA'
+X = 'ACCGACTTAGACAGGT'
+Y = 'TTACCGACGTATACAGCGTA'
 
 # valeur de score
-#match = 2
-#mismatch = -2
-#indel = -4
+match = 2
+mismatch = -2
+indel = -4
 
-# Séquences test 1
+"""# Séquences test 1
 X = 'ACGGCTAT'
 Y = 'ACTGTAT'
 
 # valeur de score
 match = 2
 mismatch = -1
-indel = -2
+indel = -2"""
 
 # -----------------------------------------------------------------------------
 #                                 Fonctions 
@@ -64,6 +64,17 @@ def Remp_tab(df_score, df_seq) :
         df_seq.iloc[k+1,0] = df_seq.iloc[k, 0] + indel
     
     max_matrix = np.empty((len(df_seq.index), len(df_seq.columns)), dtype=object)
+
+    for i in range(max_matrix.shape[0]):
+        for j in range(max_matrix.shape[1]):
+            if j == 0 and i ==0 :
+                max_matrix[i, j] = None
+            elif i == 0:
+                max_matrix[i, j] = (i, j - 1)
+            elif j == 0:
+                max_matrix[i, j] = (i - 1, j)
+            else:
+                max_matrix[i, j] = None
     
     # remplissage et Max
     for i in range(1,len(df_seq.index)):
@@ -73,53 +84,141 @@ def Remp_tab(df_score, df_seq) :
             Ins = df_seq.iloc[i,j-1] + df_score.loc['-',df_seq.columns[j]]
             val_max = max(Sub, Del, Ins)
             df_seq.iloc[i, j] = val_max
-            
+            max_positions = []
+
             if val_max == Sub:
-                max_matrix[i, j] = (i - 1, j - 1)
-            elif val_max == Del:
-                max_matrix[i, j] = (i - 1, j)
-            else:
-                max_matrix[i, j] = (i, j - 1)           
+                max_positions.append((i - 1, j - 1))
+            if val_max == Del:
+                max_positions.append((i - 1, j))
+            if val_max == Ins:
+                max_positions.append((i, j - 1))
+            max_matrix[i, j] = max_positions
+           
 
     df_max = pd.DataFrame(data=max_matrix, index=df_seq.index, columns=df_seq.columns)
-    
+    print(df_max)
     return df_seq, df_max
 
-# Partie 2 bis ou 3 : Retrouver le.s chemin.s
-def trad(Etape, df_max):
-    
 
 def find_way(df_max):
-    Etape =[df_max.iloc[-1,-1]]
+    """Trouver un seul chemin en prenant toujours le premier prédécesseur."""
 
-    while Etape[-1] != (0,0):
-        Etape.append(df_max.iloc[Etape[-1][0],Etape[-1][1]])
+    i = len(df_max.index) - 1
+    j = len(df_max.columns) - 1
 
-    return trad(Etape)
+    X_new = ''
+    Y_new = ''
+
+    while i != 0 or j != 0:
+        precedent = df_max.iloc[i, j]
+
+        if isinstance(precedent, list):
+            precedent = precedent[0]
+        pi, pj = precedent
+
+        if pi == i - 1 and pj == j - 1:
+            # Substitution ou identité
+            X_new = df_max.columns[j] + X_new
+            Y_new = df_max.index[i] + Y_new
+
+        elif pi == i - 1 and pj == j:
+            # Insertion
+            X_new = '-' + X_new
+            Y_new = df_max.index[i] + Y_new
+
+        elif pi == i and pj == j - 1:
+            # Suppression
+            X_new = df_max.columns[j] + X_new
+            Y_new = '-' + Y_new
+
+        i, j = pi, pj
+
+    return X_new, Y_new
+
+def parcours(df_max, i, j, X_new, Y_new, solutions):
+    if i == 0 and j == 0:
+        solutions.append((X_new, Y_new))
+        return
+
+    precedents = df_max.iloc[i, j]
+
+    if not isinstance(precedents, list):
+        precedents = [precedents]
+
+    for pi, pj in precedents:
+        X_temp = X_new
+        Y_temp = Y_new
+        if pi == i - 1 and pj == j - 1: # Substitution ou identité
+            X_temp = df_max.columns[j] + X_temp
+            Y_temp = df_max.index[i] + Y_temp
+        elif pi == i - 1 and pj == j: # Insertion
+            X_temp = '-' + X_temp
+            Y_temp = df_max.index[i] + Y_temp
+        elif pi == i and pj == j - 1: # Deletion
+            X_temp = df_max.columns[j] + X_temp
+            Y_temp = '-' + Y_temp
+
+        # Continuer le parcours
+        parcours(df_max, pi, pj, X_temp, Y_temp, solutions)
+
+
+def find_way_ttes_sol(df_max):
+    """Trouver toutes les solutions optimales."""
+
+    solutions = []
+    i = len(df_max.index) - 1
+    j = len(df_max.columns) - 1
+    parcours(df_max, i, j, '', '', solutions)
+
+    return solutions
+
+
 
 # -----------------------------------------------------------------------------
 #                                      Main 
 # -----------------------------------------------------------------------------
 
-X = '-'+X
-Y = '-'+Y
-df_score = Tab_score(lettres_unique(X,Y), match, mismatch, indel)
-print("tableau score fait")
-#print(df_score)
-print('---')
+def main(X,Y,match, mismatch, indel):
+    X = '-'+X
+    Y = '-'+Y
+    a = input('Utiliser les valeurs de match, mismatch et indel par défaut (1) ou utiliser des nouvelles (2) : ')
+    if a == '2':
+        match = input('match : ')
+        mismatch = input('mismatch : ')
+        indel = input('indel : ')
+    df_score = Tab_score(lettres_unique(X,Y), match, mismatch, indel)
+    print("Le tableau score est fait")
+    #print(df_score)
 
-df_seq = Tab_seq(X,Y)
-print("tableau seq fait")
-#print(df_seq)
-print('---')
+    df_seq = Tab_seq(X,Y)
+    print("Le tableau des sequences est fait")
+    df_seq,df_max = Remp_tab(df_score, df_seq)
+    print("Le tableau des sequences est rempli")
+    print(df_seq)
+    print('---')
+    print("Voici la valeur d'alignement optimal", df_seq.iloc[-1,-1])
 
-df_seq,df_max = Remp_tab(df_score, df_seq)
-print("tableau sequence rempli")
-print(df_seq)
-print('---')
+    b = input('Avoir une séquence optimale (1) ou toutes les séquences optimales : (2)')
+    if b == '2':
+        solutions = find_way_ttes_sol(df_max)
+
+        print("Voici les alignements optimaux :")
+
+        for n, (X_new, Y_new) in enumerate(solutions, 1):
+            print(f"\nAlignement {n} :")
+            print("X :", X_new)
+            print("Y :", Y_new)
+
+        print('---')
+
+    else :        
+        X_new, Y_new = find_way(df_max)
+        print("Voici l'alignement correspondant :")
+        print('X : ',X_new)
+        print('Y : ',Y_new)
+        print('---')
+        
 
 
-Chemin = find_way(df_max)
-print("Voici le chemiin")
-print(Chemin)
-print('---')
+if __name__ == "__main__":
+    main(X,Y,match, mismatch, indel)
