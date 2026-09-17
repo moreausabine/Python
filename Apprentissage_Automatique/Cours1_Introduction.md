@@ -375,6 +375,75 @@ Autrement dit : on ne peut garantir le succès que « là où la lumière porte 
 
 ### Les trois ingrédients de l'apprentissage artificiel
 
+Ce sont 3 choses que tu vas voir forcément dans les articles.  
 1. **Le choix de l'espace des hypothèses H** : en général H ≠ F (F étant l'espace de toutes les fonctions possibles).
 2. **Le critère inductif** : comment évaluer chaque hypothèse en fonction de l'échantillon S.
 3. **La méthode d'exploration de H** : comment trouver une bonne (voire optimale) hypothèse dans cet espace.
+
+Quelle hypothèse choisir parmi toutes ? Il faut donc avoir un moyen de calculer la performance : 
+coût d'une erreur de prédiction --> fonction de perte
+l(h(x),y)
+
+
+Quel coût à venir (espérance) si je choisisi h
+- escperance de cout : le risque réel R(h) = int XY (l(h(x),y)*p(x,y)dxdy)
+
+
+Erreur moyenne sur l'échantillon d'apprentissage S le risque empirique Lelslie Valiant et Vladimir Vapuik (je crois pas sur que ce soit lié)
+
+^R(h) = 1/m Somme (i =1 à M) (l(h(xi),yi))
+
+l'analyse "Pac Learning"
+
+---
+
+## Apprendre dans un espace d'hypothèses structuré
+
+
+A compléter
+
+
+
+
+
+
+## Illustration LEX
+
+Exemple simple d'illustration LEX (clide 161)
+ciel -> soleil, nuage, pluie
+AirTemp -> chaud froid
+humidité -> normal, élevé
+Vent -> fort, faible
+Eau -> chaude, fraiche
+prévision -> égale, change
+
+2 classes +/-: 
+
+nb de fonctions qui existent : 3*2^5 = 96 donc #fct : 2^96
+
+Cas de biais de langage : on ne peut pas avoir de disjonction
+Hypothèses : conjonctions d'attributs ? ou vide
+finalement nous avons 4*3^5 donc 972
+
+
+On veut savoir dans quelle conditon on va jouer au golf
+
+        ciel x AirTemp x Humidité x Vent x Eau x prévision
+
+Ex 1 (+) Soleil x chaud x normal x Fort x chaude x égale   
+S1 = {(Soleil x chaud x normal x Fort x chaude x égale)}  
+G1 = {(? x ? x ? x ? x ? x ?)}
+
+Ex 2 (+) Soleil x chaud x élevé x Fort x chaude x égale
+S2 = {(Soleil x chaud x ? x Fort x chaude x égale)}  
+G2 = {(? x ? x ? x ? x ? x ?)}
+
+Ex 3 (-) Pluie x froid x élevé x Fort x chaude x change
+S3 = S2 = {(Soleil x chaud x ? x Fort x chaude x égale)}  
+G3 = {(Soleil x ? x ? x ? x ? x ?),(? x chaud x ? x ? x ? x ?),(? x ? x ? x ? x ? x egale)}
+
+Ex 4 (+) Soleil x chaud x élevé x Fort x Fraiche x change
+S4 = {(Soleil x chaud x ? x Fort x ? x ?)} 
+G4 = {(Soleil x ? x ? x ? x ? x ?),(? x chaud x ? x ? x ? x ?)}
+
+etc...
