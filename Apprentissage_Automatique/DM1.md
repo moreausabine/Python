@@ -33,7 +33,7 @@ Le S-set est donc : {(Conique & chaude & organique)}
 Le G-set est donc : {(Conique & ? & ?),(? & chaude & ?)}  
 
 ### 2- Comment seront alors classés les exemples suivants et pourquoi ?
-En supposant que les classes ne soient pas réparties aléatoirement, que j'ai les même biais que la personne ayant fait le DM et qu'il est préférable d'avoir des faux négatifs que des faux positifs, les nouvelles séquences pourraient être classées ainsi : 
+En supposant qu'il est préférable d'avoir des faux négatifs que des faux positifs, les nouvelles séquences pourraient être classées ainsi : 
 | Exemple | Forme | Couleur | Composition | Résultat (Classe) |
 | :--- | :--- | :--- | :--- | :---: |
 | **E5** | Sphère | marron | cétone | **+** |
