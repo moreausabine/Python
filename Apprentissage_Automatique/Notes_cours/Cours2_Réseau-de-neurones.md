@@ -162,3 +162,25 @@ Le signal circule dans un seul sens, de la couche d'entrée vers la couche de so
 Pendant l'apprentissage, on compare la sortie produite yₖ à la **sortie désirée** uₖ (la vraie étiquette attendue) pour calculer l'erreur — c'est cette comparaison qui permettra (au prochain cours) de corriger les poids de TOUTES les couches via la rétropropagation.
 
 → L'idée centrale à retenir : en ajoutant une couche cachée entre l'entrée et la sortie, le réseau peut désormais apprendre des séparations NON linéaires (comme le XOR), car la couche cachée peut recombiner les entrées de façon non triviale avant la décision finale de la couche de sortie. C'est exactement la réponse au problème du XOR soulevé plus haut : on n'a plus un seul hyperplan, mais une combinaison de plusieurs hyperplans (un par neurone caché), ce qui permet de découper l'espace en régions bien plus complexes.
+
+
+### Propagation
+
+
+
+
+*A compléter*
+
+
+
+### Calcul des poids : slide 47
+le point tt seul ; le biais il fait +1
+
+
+*A compléter*
+
+
+### Sur apprentissage RN (slide 74)
+bien comprendre
+
+### Le choix de l'architecture

@@ -151,73 +151,73 @@ Astuce pour retrouver la grille à partir de `cv_results_['mean_test_score']` (v
 
 ## Partie 2 — Fiche décision : quel outil pour quel cas ?
 
-### 1. « Je veux un score rapide et global »
-**Utiliser :** `accuracy_score`
-**Pourquoi :** un seul chiffre, facile à lire.
-**Piège :** trompeur dès que les classes sont déséquilibrées — un classifieur qui prédit toujours la classe majoritaire peut afficher 95%+ d'accuracy sans être utile.
-**Exemple :** 200 points normaux vs 15 événements → un modèle qui ne détecte jamais rien a quand même ~93% d'accuracy.
+### 1. « Je veux un score rapide et global »  
+**Utiliser :** `accuracy_score`  
+**Pourquoi :** un seul chiffre, facile à lire.  
+**Piège :** trompeur dès que les classes sont déséquilibrées — un classifieur qui prédit toujours la classe majoritaire peut afficher 95%+ d'accuracy sans être utile.  
+**Exemple :** 200 points normaux vs 15 événements → un modèle qui ne détecte jamais rien a quand même ~93% d'accuracy.  
 
 ### 2. « Je veux savoir quelle classe pose problème »
-**Utiliser :** `precision_score` et `recall_score` avec `average=None` (ou `pos_label=` en binaire)
-**Pourquoi :** l'accuracy masque les erreurs asymétriques entre classes ; précision et rappel sont **complémentaires** (on peut trivialement maximiser l'un en sacrifiant l'autre).
-**Exemple :** un classifieur qui prédit toujours « +1 » obtient un rappel de 100% sur la classe +1, mais une précision qui s'effondre.
+**Utiliser :** `precision_score` et `recall_score` avec `average=None` (ou `pos_label=` en binaire)  
+**Pourquoi :** l'accuracy masque les erreurs asymétriques entre classes ; précision et rappel sont **complémentaires** (on peut trivialement maximiser l'un en sacrifiant l'autre).  
+**Exemple :** un classifieur qui prédit toujours « +1 » obtient un rappel de 100% sur la classe +1, mais une précision qui s'effondre.  
 
 ### 3. « Je veux un seul chiffre qui résume précision ET rappel »
-**Utiliser :** `f1_score`
-**Pourquoi :** moyenne harmonique — pénalise fortement si l'une des deux valeurs est basse (contrairement à la moyenne arithmétique).
+**Utiliser :** `f1_score`  
+**Pourquoi :** moyenne harmonique — pénalise fortement si l'une des deux valeurs est basse (contrairement à la moyenne arithmétique).  
 
 ### 4. « Je veux voir le détail de toutes les erreurs (VP/FP/VN/FN) »
-**Utiliser :** `confusion_matrix` + `ConfusionMatrixDisplay`
-**Pourquoi :** vue complète, utile pour du multi-classes (voir quelles classes sont confondues entre elles).
-**Exemple :** sur USPS (chiffres manuscrits), la matrice montre par exemple que le 4 et le 9 sont souvent confondus.
+**Utiliser :** `confusion_matrix` + `ConfusionMatrixDisplay`  
+**Pourquoi :** vue complète, utile pour du multi-classes (voir quelles classes sont confondues entre elles).  
+**Exemple :** sur USPS (chiffres manuscrits), la matrice montre par exemple que le 4 et le 9 sont souvent confondus.  
 
 ### 5. « Mon classifieur a un seuil ajustable, je veux voir tous les compromis possibles »
-**Utiliser :** `PrecisionRecallDisplay.from_estimator` (ou `precision_recall_curve`)
-**Pourquoi :** un classifieur produit un score continu (`decision_function`/`predict_proba`) ; changer le seuil ne change pas le modèle mais change le compromis précision/rappel obtenu.
-**Exemple :** en détection d'alarme, si je ne tolère aucune fausse alerte, quelle couverture (rappel) puis-je espérer ? La courbe répond directement à cette question.
+**Utiliser :** `PrecisionRecallDisplay.from_estimator` (ou `precision_recall_curve`)  
+**Pourquoi :** un classifieur produit un score continu (`decision_function`/`predict_proba`) ; changer le seuil ne change pas le modèle mais change le compromis précision/rappel obtenu.  
+**Exemple :** en détection d'alarme, si je ne tolère aucune fausse alerte, quelle couverture (rappel) puis-je espérer ? La courbe répond directement à cette question.  
 
 ### 6. « Cas déséquilibré : je veux étudier détection vs fausse alerte »
-**Utiliser :** `roc_curve` / `RocCurveDisplay`
-**Pourquoi :** trace le taux de vrais positifs (TPR = rappel) contre le taux de faux positifs (FPR), pour tous les seuils possibles.
-**Exemple :** détection de fraude — la courbe ROC montre le compromis entre fraudes détectées et fausses alertes générées.
+**Utiliser :** `roc_curve` / `RocCurveDisplay`  
+**Pourquoi :** trace le taux de vrais positifs (TPR = rappel) contre le taux de faux positifs (FPR), pour tous les seuils possibles.  
+**Exemple :** détection de fraude — la courbe ROC montre le compromis entre fraudes détectées et fausses alertes générées.  
 
 ### 7. « Je veux un indicateur unique pour résumer une courbe ROC »
-**Utiliser :** `auc(fpr, tpr)` ou `roc_auc_score(y_true, scores)`
-**Pourquoi :** évite de comparer des courbes entières entre plusieurs modèles.
-**Interprétation utile pour un non-expert :** l'AUC = probabilité qu'un événement tiré au hasard reçoive un score plus élevé qu'un non-événement tiré au hasard (0.5 = hasard pur, 1 = parfait).
+**Utiliser :** `auc(fpr, tpr)` ou `roc_auc_score(y_true, scores)`  
+**Pourquoi :** évite de comparer des courbes entières entre plusieurs modèles.  
+**Interprétation utile pour un non-expert :** l'AUC = probabilité qu'un événement tiré au hasard reçoive un score plus élevé qu'un non-événement tiré au hasard (0.5 = hasard pur, 1 = parfait).  
 
 ### 8. « Déséquilibre TRÈS fort (événement rare, <1% de positifs) »
-**Utiliser :** `average_precision_score` plutôt que l'AUC seule, et regarder la courbe précision/rappel plutôt que la ROC.
-**Pourquoi :** le FPR (dénominateur = tous les négatifs) reste quasi inchangé même avec beaucoup de fausses alertes quand les négatifs sont très nombreux → l'AUC peut sembler excellente (ex. 0.95) alors que la précision s'effondre en pratique. La précision, elle, ne regarde jamais les vrais négatifs et réagit donc immédiatement au moindre bruit.
-**Exemple :** 0.1% de positifs, AUC = 0.95 → peut quand même être inutilisable en production (à vérifier avec la précision).
+**Utiliser :** `average_precision_score` plutôt que l'AUC seule, et regarder la courbe précision/rappel plutôt que la ROC.  
+**Pourquoi :** le FPR (dénominateur = tous les négatifs) reste quasi inchangé même avec beaucoup de fausses alertes quand les négatifs sont très nombreux → l'AUC peut sembler excellente (ex. 0.95) alors que la précision s'effondre en pratique. La précision, elle, ne regarde jamais les vrais négatifs et réagit donc immédiatement au moindre bruit.  
+**Exemple :** 0.1% de positifs, AUC = 0.95 → peut quand même être inutilisable en production (à vérifier avec la précision).  
 
 ### 9. « Peu de données, le score dépend trop du tirage train/test »
-**Utiliser :** validation croisée — `cross_val_score` (rapide) ou boucle `StratifiedKFold` (si besoin de contrôler chaque fold en détail)
-**Pourquoi :** moyenne le score sur plusieurs découpages + fournit un écart-type (mesure de confiance).
-**Exemple :** avec `random_state` différent sur un simple `train_test_split`, le score peut varier de plusieurs points — la validation croisée lisse cet effet.
+**Utiliser :** validation croisée — `cross_val_score` (rapide) ou boucle `StratifiedKFold` (si besoin de contrôler chaque fold en détail)  
+**Pourquoi :** moyenne le score sur plusieurs découpages + fournit un écart-type (mesure de confiance).  
+**Exemple :** avec `random_state` différent sur un simple `train_test_split`, le score peut varier de plusieurs points — la validation croisée lisse cet effet.  
 
 ### 10. « Je veux comparer deux modèles et savoir si la différence est significative »
-**Utiliser :** `paired_ttest_kfold_cv` (package `mlxtend`)
-**Pourquoi :** un test apparié compare les modèles sur les mêmes folds — beaucoup plus sensible qu'une simple comparaison de moyennes.
-**Repère grossier :** <50 exemples → approche statistique poussée nécessaire ; >10 000 exemples → la moindre amélioration est souvent significative ; cas intermédiaire → `paired_ttest_kfold_cv`.
+**Utiliser :** `paired_ttest_kfold_cv` (package `mlxtend`)  
+**Pourquoi :** un test apparié compare les modèles sur les mêmes folds — beaucoup plus sensible qu'une simple comparaison de moyennes.  
+**Repère grossier :** <50 exemples → approche statistique poussée nécessaire ; >10 000 exemples → la moindre amélioration est souvent significative ; cas intermédiaire → `paired_ttest_kfold_cv`.  
 
 ### 11. « Je veux régler un hyperparamètre (ex. gamma d'un SVM) »
-**Utiliser :** `GridSearchCV`
-**Pourquoi :** automatise la boucle « essayer chaque valeur + évaluer en validation croisée », sans toucher au jeu de test.
-**Exemple :** chercher le meilleur `gamma` ET le meilleur `C` d'un SVM à noyau gaussien simultanément (grille 2D).
+**Utiliser :** `GridSearchCV`  
+**Pourquoi :** automatise la boucle « essayer chaque valeur + évaluer en validation croisée », sans toucher au jeu de test.  
+**Exemple :** chercher le meilleur `gamma` ET le meilleur `C` d'un SVM à noyau gaussien simultanément (grille 2D).  
 
 ### 12. « Je veux un score final honnête après avoir sélectionné des hyperparamètres »
-**Utiliser :** validation croisée **imbriquée** (*nested cross-validation*) — englober le `GridSearchCV` dans un `cross_val_score` externe.
-**Pourquoi :** `best_score_` d'un `GridSearchCV` est optimiste : c'est le maximum d'un ensemble de mesures bruitées, donc systématiquement au-dessus de la vraie performance. Une boucle externe qui refait sa propre recherche d'hyperparamètres sur chaque fold donne une estimation non biaisée.
-**Exemple :**
+**Utiliser :** validation croisée **imbriquée** (*nested cross-validation*) — englober le `GridSearchCV` dans un `cross_val_score` externe.  
+**Pourquoi :** `best_score_` d'un `GridSearchCV` est optimiste : c'est le maximum d'un ensemble de mesures bruitées, donc systématiquement au-dessus de la vraie performance. Une boucle externe qui refait sa propre recherche d'hyperparamètres sur chaque fold donne une estimation non biaisée.  
+**Exemple :**  
 ```python
 grid = GridSearchCV(SVC(), param_grid={'C':[...], 'gamma':[...]}, cv=3)
 scores = cross_val_score(grid, X, y, cv=5)   # boucle externe honnête
 ```
 
 ### 13. « Problème multi-classes, je veux un score global »
-**Utiliser :** `average='micro'`, `'macro'` ou `'weighted'` selon le besoin.
-**Comment choisir :**
+**Utiliser :** `average='micro'`, `'macro'` ou `'weighted'` selon le besoin.  
+**Comment choisir :**  
 - `micro` = équivalent de l'accuracy globale (à étiquette unique).
 - `macro` = chaque classe compte pareil, **à privilégier si les classes rares sont importantes** (ex. maladies rares) — une classe massacrée pèse autant qu'une classe bien traitée.
 - `weighted` = pondéré par la taille des classes, plus proche du ressenti global mais peut masquer une classe rare mal traitée.
