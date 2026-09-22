@@ -24,7 +24,7 @@ class Config:
     class SIMU:
         SEED = None              # ex: 42 pour une simulation reproductible
         MAX_TOURS = None         # None = pas de limite
-        PAUSE = 0.05              # pause entre deux affichages (secondes)
+        PAUSE = 0.025              # pause entre deux affichages (secondes)
         AFFICHER_TOUS_LES = 1    # 1 = chaque tour, 5 = un tour sur 5...
 
     class LAPIN:
