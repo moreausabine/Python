@@ -68,4 +68,27 @@ Il ne faut pas simplement mettre le classifieur dans des données brutes: il fau
 Anova : on peut en conserver certaines attention là on les a utilisé indépendemment Cas linéaire pas parfait
 
 
-**Slide 22** 
+*A compléter*
+
+**Slide 25** :  
+ACP et PCA : *noter les différentes méthodes à connaitres pour le faire fonctionner
+
+**Slide 27**
+Résguralisation L2 : Formulation Ridge (on veut tjs minimiser le L)
+C||w||² : terme de contrôle 
+
+**Slide28**
+Le lasso : au lieu de minimiser une norme 2 on minimise une norme 1 (ou l'inverse)
+La courbe verte du nombre de variables que tu utilises augmente progressivement (c'est mieux quand même)
+Astier type sherani
+
+Par contre c'est absolument pas stable et les perf sont pas bonnes.
+
+Solution : lasso pour sélectionner le svariables plus ridge pour avoir la performance sous le sous ensemble de variables avec le ridge
+
+
+**Slide 29** Alternative : elastic Net
+On combine les 2 pénlisation C1 et c2 donc on a efficacité et performance
+
+
+

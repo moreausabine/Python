@@ -26,11 +26,11 @@ G2 = {(? & ? & ?)}
 S3 = S2 = {(Conique & chaude & organique)}  
 G3 = {(Conique & ? & ?),{(? & chaude & ?)},{(? & ? & organique)}}  
 - **E4** :  
-S4 = {(Conique & chaude & organique)}  
-G4 = {(Conique & ? & ?),(? & chaude & ?)} 
+S4 = {(Conique & foncé & organique)}  
+G4 = {(Conique & ? & ?),(? & foncé & ?)} 
 
-Le S-set est donc : {(Conique & chaude & organique)}  
-Le G-set est donc : {(Conique & ? & ?),(? & chaude & ?)}  
+Le S-set est donc : {(Conique & foncé & organique)}  
+Le G-set est donc : {(Conique & ? & ?),(? & foncé & ?)}  
 
 ### 2- Comment seront alors classés les exemples suivants et pourquoi ?
 En supposant qu'il est préférable d'avoir des faux négatifs que des faux positifs, les nouvelles séquences pourraient être classées ainsi : 
