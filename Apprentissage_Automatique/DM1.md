@@ -20,17 +20,19 @@ Les séquences d'exemple sont :
 S1 = {(Ellipsoïde & orange & amine)}  
 G1 = {(? & ? & ?)}  
 - **E2** :  
-S2 = {(Conique & chaude & organique)}  
+S2 = {(Conique & clare & organique),(Conique & foncée & organique)}  
 G2 = {(? & ? & ?)}  
 - **E3** :   
-S3 = S2 = {(Conique & chaude & organique)}  
+S3 = S2 = {(Conique & clare & organique),(Conique & foncée & organique)}
 G3 = {(Conique & ? & ?),{(? & chaude & ?)},{(? & ? & organique)}}  
 - **E4** :  
 S4 = {(Conique & foncé & organique)}  
-G4 = {(Conique & ? & ?),(? & foncé & ?)} 
+G4 = {(? & foncé & ?)} 
 
 Le S-set est donc : {(Conique & foncé & organique)}  
-Le G-set est donc : {(Conique & ? & ?),(? & foncé & ?)}  
+Le G-set est donc : {(? & foncé & ?)}  
+
+<br>
 
 ### 2- Comment seront alors classés les exemples suivants et pourquoi ?
 En supposant qu'il est préférable d'avoir des faux négatifs que des faux positifs, les nouvelles séquences pourraient être classées ainsi : 
@@ -46,10 +48,22 @@ La séquence E6 aurait probablemet pour classe **-** car même si la forme est c
 
 La séquence E7 aurait peut-être pour classe **-** car même si cette fois-ci la couleur et la composition sont respectivement foncée et organique, la forme est un pentaèdre comme dans l'exemple 4 qui était de classe -.
 
+
+<br>
+
 ---
 
 ## Exercice 2 : Réflexions sur la fragmentation du G-set
 
 ### 1- Pourquoi le G-set peut facilement être de taille exponentielle en le nombre d’exemples d’apprentissage ?
 
-La question demande d'expliquer pourquoi, au fur et à mesure que l'on traite des exemples, le nombre d'hypothèses conservées dans le $G$-set peut augmenter de manière très rapide (exponentielle) au lieu de rester petit.
+G peut devenir très grand parce qu'un exemple négatif peut créer plusieurs spécialisations possibles, et chacune de ces spécialisations peut ensuite donner naissance à plusieurs autres spécialisations qui dans certains cas peuvent être chacune incomparable (chacune n'est pas plus spécifique que les autres). Cependant ces cas correspondent aux pires des cas lorsqu'il y a beaucoup d'attributs avec des hierarchies complexes. 
+
+Ceci est une intuition cependant je n'ai pas réussi à trouver des exemples permettanty d'illustrer ce phénomène.
+
+<br>
+
+### 2- Quel remède pourrait permettre de limiter de phénomène ? Réfléchissez en particulier à l’utilisation de near-miss (contre-exemples critiques). Quel effet ont-ils sur le G-set ?
+
+Le near-miss correspond au fait de donner des exemples négatifs  proches des exemles positifs.  
+Ceci permet de limiter ou diminuer les hypothèses possibles dans le G-set car cela permet d'éliminer les généralisations trop larges. En effet, le but du G-set et S-set sont de délimiter l'espace des versions possible. Exclure des hypothèses proches des hypothèses positives dont déjà inclues dans le S-set permettent donc rapprocher le G-set du S-set et donc d'aider à la convergence.
