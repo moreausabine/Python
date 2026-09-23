@@ -184,3 +184,8 @@ le point tt seul ; le biais il fait +1
 bien comprendre
 
 ### Le choix de l'architecture
+
+
+
+
+## Réseau à convolution

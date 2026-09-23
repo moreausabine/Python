@@ -20,4 +20,16 @@
 3) Qu'est ce que l'espace des versions ? Quelles hypothèses s'y trouvent ?  
    Espace dont le risque empirique est nul
 
-4) 
+
+
+---
+
+## Quiz 3 : 
+
+1) Quel est le rôle des couches cachées dans les perceptrons multi-couches ?
+
+2) Pourquoi pourrait on préférer le gradient stochastique au gradient total ?
+   
+3) Soient 
+   
+4) Expliquer le compromis biais-variance des modèles multi-couche ?
