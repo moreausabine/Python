@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 rd.seed(10)
 
-tri = 'Rapide_2'
+tri = 'Selection'
 
 # Liste L :
 N = 5
