@@ -33,3 +33,12 @@
 3) Soient 
    
 4) Expliquer le compromis biais-variance des modèles multi-couche ?
+
+## Quiz 4
+
+1) Codes correcteur d'erreur
+
+2) dans un réservoir computing où est l'apprentissage ?
+   Jusre avant la couche de sortie
+
+3) 
