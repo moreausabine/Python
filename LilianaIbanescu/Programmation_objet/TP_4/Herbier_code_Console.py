@@ -1,8 +1,8 @@
 import json
+import random as rd
 import unicodedata
 from pathlib import Path
 
-# Récupère le dossier contenant actuellement ce fichier
 dossier_courant = Path(__file__).resolve().parent
 
 CYCLES_AUTORISES = ['vivace', 'annuel', 'bisannuel']
@@ -100,6 +100,7 @@ class Herbier:
                         'arrosage_fort', 'eau_douce', 'eau_de_mer']
         self.cycle = list(CYCLES_AUTORISES)
         self.famille = []
+        self.nom_plante = []
 
     # ---------- gérer les données de l'herbier ----------
     def mise_jour_besoins(self, besoins):
@@ -112,9 +113,12 @@ class Herbier:
                 self.besoins.append(besoin)
 
     def mise_jour_famille(self, famille):
-        # les familles sont déjà normalisées : pas de .lower()
         if famille and famille not in self.famille:
             self.famille.append(famille)
+
+    def mise_jour_nom_plante(self, nom_plante):
+        if nom_plante and nom_plante not in self.nom_plante:
+            self.nom_plante.append(nom_plante)
 
     def ajouter_plante(self, plante):
         if not plante.nom:
@@ -128,6 +132,7 @@ class Herbier:
         self.classeur.sort(key=tri_par_nom)
         self.mise_jour_besoins(plante.besoins)
         self.mise_jour_famille(plante.famille)
+        self.mise_jour_nom_plante(plante.nom)
         return True
 
     def supprimer_plante(self, nom):
@@ -167,10 +172,10 @@ class Herbier:
     def nettoyer_plante(self, donnees):
         """Prend un dictionnaire brut, retourne un dictionnaire propre avec toujours les 6 clés."""
         besoins = donnees.get("besoins")
-        if isinstance(besoins, str):                      # "soleil/arrosage faible"
+        if isinstance(besoins, str):       
             besoins = besoins.split("/")
         besoins = [self.nettoyer_besoin(b) for b in (besoins or [])]
-        besoins = list(dict.fromkeys(b for b in besoins if b))   # enlève les vides et les doublons
+        besoins = list(dict.fromkeys(b for b in besoins if b)) 
 
         photo = donnees.get("photo")
         photo = photo.strip() if isinstance(photo, str) else None
@@ -184,7 +189,7 @@ class Herbier:
             "photo": photo or None,
         }
 
-        erreurs = valider_plante(propre)      # champs obligatoires + données manquantes
+        erreurs = valider_plante(propre)
         if erreurs:
             afficher_rapport(propre, erreurs)
         return propre
@@ -192,7 +197,7 @@ class Herbier:
     def integrer(self, donnees):
         """Nettoie, valide puis ajoute une plante. Retourne True si elle est ajoutée."""
         propre = self.nettoyer_plante(donnees)
-        if valider_plante(propre):            # erreurs déjà affichées par nettoyer_plante
+        if valider_plante(propre):
             return False
         return self.ajouter_plante(Plante(**propre))
 
@@ -240,7 +245,7 @@ class Herbier:
                     break
         return Liste_plante
 
-    def filtrer(self, cycle, besoin, famille):
+    def filtrer(self, cycle=None, besoin=None, famille=None):
         cible = 0
         if cycle is not None:
             cible += 1
@@ -264,10 +269,162 @@ class Herbier:
 
         return Liste_plante
 
+    def famille_de(self, nom):
+        """Retourne la famille d'une plante (nom vernaculaire ou scientifique), ou None si inconnue."""
+        nom = self.nettoyer_nom(nom)
+        if not nom:
+            return None
+        for plante in self.classeur:
+            if nom in (plante.nom, plante.nom_scientifique):
+                return plante.famille
+        return None
+
+
+class Quiz:
+    def __init__(self, herbier, nb_question = 5, revision = False, note = 0):
+        self.nb_question_max = int(nb_question) 
+        self.herbier = herbier
+        self.revision = revision
+        self.note = note
+        self.espece_questionable = list(self.herbier.nom_plante)
+        self.famille_questionable = list(self.herbier.famille)
+        self.question_posee = 0
+ 
+    def demander_reponse(self, nb_choix):
+        """Redemande tant que la saisie n'est pas un numéro entre 1 et nb_choix."""
+        rep = input('Numéro de réponse : ')
+        while not rep.strip().isdigit() or int(rep) < 1 or int(rep) > nb_choix: 
+            print('Ecrivez un numéro de réponse juste')
+            rep = input('Numéro de réponse : ')
+        return int(rep)
+ 
+    def question_nom_verna(self, espece):
+        print(f"Quelle est la famille de {espece} ?")
+        reponse_juste = self.herbier.famille_de(espece)
+        if reponse_juste in self.famille_questionable: 
+            self.famille_questionable.remove(reponse_juste)
+        Reponse = [reponse_juste]
+        mauvaises = [f for f in self.herbier.famille if f != reponse_juste]
+        Reponse += rd.sample(mauvaises, min(3, len(mauvaises)))
+ 
+        rd.shuffle(Reponse)
+ 
+        for k in range(len(Reponse)):
+            print(f"{k+1} - {Reponse[k]}")
+ 
+        rep = self.demander_reponse(len(Reponse))
+ 
+        if Reponse[rep-1] == reponse_juste :
+            print("Félicitation ! Vous avez trouvé la bonne réponse :)")
+            return 1
+        else :
+            print(f"Dommage... La bonne réponse était {reponse_juste}")
+            return 0
+ 
+ 
+    def question_famille(self, miff):
+        especes_correctes = [p.nom for p in self.herbier.filtrer(famille = miff)]
+        print(f"Quelle plante est de la famille des {miff} ?")
+
+        candidats = [e for e in especes_correctes if e in self.espece_questionable] or especes_correctes
+        reponse_juste = rd.choice(candidats)
+        if reponse_juste in self.espece_questionable:
+            self.espece_questionable.remove(reponse_juste)
+ 
+        Reponse = [reponse_juste]
+        mauvaises = [e for e in self.herbier.nom_plante if e not in especes_correctes] 
+        Reponse += rd.sample(mauvaises, min(3, len(mauvaises)))
+ 
+        rd.shuffle(Reponse)
+ 
+        for k in range(len(Reponse)):
+            print(f"{k+1} - {Reponse[k]}")
+ 
+        rep = self.demander_reponse(len(Reponse))
+ 
+        if Reponse[rep-1] == reponse_juste :
+            print("Félicitation ! Vous avez trouvé la bonne réponse :)")
+            return 1
+        else :
+            print(f"Dommage... La bonne réponse était {reponse_juste} :(")
+            return 0
+ 
+ 
+    def quiz_revision(self, miff):
+        self.espece_questionable = [p.nom for p in self.herbier.filtrer(famille = miff)]
+        while self.question_posee < self.nb_question_max and len(self.espece_questionable) > 0:
+            print('-------')
+            print(f'Question {self.question_posee+1} sur la famille des {miff}')
+            self.note = self.note + self.question_famille(miff)
+            self.question_posee = self.question_posee + 1
+ 
+ 
+    def quiz_classique(self):
+        while self.question_posee < self.nb_question_max and len(self.espece_questionable) > 0 and len(self.famille_questionable) > 0:
+            print('-------')
+            print(f'Question {self.question_posee+1}')
+            a = rd.randint(0,1)
+            if a == 0:
+                espece = rd.choice(self.espece_questionable)
+                self.espece_questionable.remove(espece)
+                point = self.question_nom_verna(espece)
+            else : 
+                miff = rd.choice(self.famille_questionable)
+                self.famille_questionable.remove(miff)
+                point = self.question_famille(miff)
+            self.note = self.note + point
+            self.question_posee = self.question_posee + 1
+ 
+ 
+ 
+    def quiz(self):
+        if self.revision : 
+            print("Vous venez de lancer un quiz de révision, quelle famille de plante voulez vous résever ?")
+            i = 0
+            for fam in self.herbier.famille : 
+                i = i + 1     
+                print(f'{i} - {fam}')
+            a = input('Numéro de la famille de plante (une seule) : ')
+            while not a.strip().isdigit() or int(a)<1 or int(a)>len(self.herbier.famille):
+                print('Veuillez sélectionner un numéro de famille correcte')
+                a = input('Numéro de la famille de plante (une seule) : ')
+ 
+            self.quiz_revision(self.herbier.famille[int(a)-1])
+                
+        else :
+            self.quiz_classique()
+ 
+        if self.question_posee == 0:
+            print("Aucune question possible (herbier vide ?)")
+            return
+ 
+        pourcentage = round(self.note/self.question_posee*100, 1)
+ 
+        print("=============================")
+        print("          RESULTAT           ")
+        print("=============================")
+        print(f'Score : {self.note}/{self.question_posee}')
+        print(f'Pourcentage : {pourcentage} %')
+        print("=============================")
+ 
+        if pourcentage == 100 :
+            print('Excellent !')
+        elif pourcentage >= 80:
+            print('Très bien !')
+        elif pourcentage >= 60:
+            print('Bien mais révise encore un peu plus !')
+        else:
+            print('Revoyez vos famille de plantes !')
+        print("=============================")
+
+
+# =====================================================================
+#  INTERFACE GRAPHIQUE (Console)
+# =====================================================================
 
 class Interagir:
     """Interface utilisateur : saisies (input) et affichages (print) uniquement.
-    Tout le reste est délégué à self.herbier."""
+    Tout le reste est délégué à self.herbier et self.quiz"""
 
     def __init__(self):
         self.herbier = Herbier()
@@ -319,7 +476,7 @@ class Interagir:
             famille = input('Famille ? : ')
 
             cycle = None
-            while cycle is None:   # le cycle est obligatoire
+            while cycle is None:   # cycle  obligatoire
                 cycle = self.demander('Cycle ? (annuel/bisannuel/vivace) : ',
                                       self.herbier.cycle, self.herbier.nettoyer_cycle)
                 if cycle is None:
@@ -337,13 +494,13 @@ class Interagir:
 
         elif choix == '2':
             saisie = input('nom_verna//nom_scien//famille//cycle//besoin1/besoin2//photo : ')
-            attributs = [e.strip() for e in saisie.split("//")]   # on garde les champs vides
+            attributs = [e.strip() for e in saisie.split("//")]
             if len(attributs) < 5:
                 print("Format invalide : il faut au moins 5 champs séparés par //")
                 return
             donnees = {"nom": attributs[0], "nom_scientifique": attributs[1],
                        "famille": attributs[2], "cycle": attributs[3],
-                       "besoins": attributs[4],        # "besoin1/besoin2" : nettoyer_plante sait le découper
+                       "besoins": attributs[4],
                        "photo": attributs[5] if len(attributs) > 5 else None}
         else:
             print("Choix non valide")
@@ -375,6 +532,32 @@ class Interagir:
         else:
             print("Choix non valide")
 
+    # ---------- quiz ----------        
+    def lancer_quiz(self):
+        print('Vous allez lancer un quiz quelques questions de configuration :')
+        print('1 - Combien de questions voulez vous faire ?')
+        print("(Attention nombre maximal de question limité par le nombre d'espèce dans l'herbier)")
+        nb_question = input('(chiffre positif obligatoire !) ')
+        while not nb_question.strip().isdigit() or int(nb_question) <= 0:
+            nb_question = input('(chiffre positif obligatoire !) ')
+        nb_question = int(nb_question)
+ 
+        mauvaise_reponse = False
+        while not mauvaise_reponse :
+            print("2 - Serait ce un quiz de révision d'une famille particulière ?")
+            rev = input('(oui/non)').strip().lower()
+            if rev == 'oui' :
+                quiz = Quiz(self.herbier, nb_question = nb_question, revision=True)
+                quiz.quiz()
+                mauvaise_reponse = True
+            elif rev == 'non' :
+                quiz = Quiz(self.herbier, nb_question = nb_question)
+                quiz.quiz()
+                mauvaise_reponse = True
+
+
+
+
     # ---------- menu ----------
     def menu(self):
         while True:
@@ -385,6 +568,7 @@ class Interagir:
             print("4. Afficher tout l'herbier")
             print("5. Supprimer une plante")
             print("6. Sauvegarder l'herbier")
+            print("7. Lancer un quiz")
             print("0. Quitter")
             choix = input("Votre choix : ").strip()
 
@@ -404,6 +588,8 @@ class Interagir:
                     print("Aucune plante de ce nom")
             elif choix == '6':
                 self.sauvegarder_herbier()
+            elif choix == '7':
+                self.lancer_quiz()
             elif choix == '0':
                 print("À bientôt !")
                 break
@@ -412,28 +598,8 @@ class Interagir:
 
 
 # =====================================================================
-#  Tests rapides (décommente pour essayer)
+#  Tests rapides
 # =====================================================================
-
-# h = Herbier()
-# print(h.nettoyer_plante({"nom": " tomate ", "nom_scientifique": "SOLANUM  lycopersicum",
-#                          "famille": "Solanacées", "cycle": "Annuelle",
-#                          "besoins": ["Soleil", "arrosage régulier"], "photo": "tomate.jpg"}))
-# h.nettoyer_plante({"nom": "", "nom_scientifique": "Ocimum basilicum",
-#                    "famille": "Lamiaceae", "cycle": "annuel", "besoins": ["soleil"]})
-#
-# a = Plante("Tomate", "Solanum lycopersicum", "Solanaceae", "annuel", ["soleil"])
-# b = Plante("Tomate cerise", "Solanum lycopersicum", "Solanaceae", "annuel", ["soleil"])
-# for original, doublon in detecter_doublons([a, b]):
-#     print(f"{doublon.nom} est un doublon de {original.nom}")
-#
-# # Test de la sérialisation
-# h.charger_json("plantes_degradees.json")
-# h.sauvegarder_json("mon_herbier.json")
-# h2 = Herbier()
-# h2.charger_json("mon_herbier.json")
-# print([vars(p) for p in h.classeur] == [vars(p) for p in h2.classeur])   # True
-
 
 if __name__ == "__main__":
     Interagir().menu()
