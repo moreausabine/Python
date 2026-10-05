@@ -130,6 +130,7 @@ les dates et set : redites ?
 **"promo":false,**
 **"reprint":true,**
 **"variation":false,**
+*Ajouté par rapport à Fort*
 **"card_faces": l**
 **"defense": l** # pour les battles 
 **"edhrec_rank": l**

@@ -196,6 +196,7 @@ class Interagir:
             return
 
         donnees = self.nettoyage_donnees(donnees)
+        print(donnees)
 
         ajoutees = 0
         for p in donnees:
