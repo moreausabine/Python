@@ -17,6 +17,7 @@ def tri_par_nom(plante):
 
 
 def enlever_accents(texte):
+    """ Enleve les accents"""
     nfd_form = unicodedata.normalize('NFD', texte)
     return "".join([c for c in nfd_form if unicodedata.category(c) != 'Mn'])
 
@@ -75,6 +76,7 @@ def detecter_doublons(plantes):
 # =====================================================================
 
 class Plante:
+    """ Classe plante : pour avoir le print et  les attributs des plantes"""
     def __init__(self, nom, nom_scientifique, famille, cycle, besoins, photo=None):
         self.nom = nom
         self.nom_scientifique = nom_scientifique
@@ -86,6 +88,7 @@ class Plante:
         self.photo = photo
 
     def __str__(self):
+        """ le print """
         return (f"{self.nom} ({self.nom_scientifique}) - {self.famille}\n"
                 f"Cycle : {self.cycle}\n"
                 f"Besoins : {', '.join(self.besoins)}")
