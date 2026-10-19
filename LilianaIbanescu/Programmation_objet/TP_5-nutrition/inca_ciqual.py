@@ -139,9 +139,71 @@ def apports_par_repas(id_individu):
     return totaux_par_repas
 
 
+# Partie D : Les jointures
+def apports_individu_merge(id_individu):
+    #colonnes qui nous interessent : 
+    # - individus : id_individu, 
+    # - consommations : id_individu, code_aliment,
+    # - composition : code_aliment, code_const, teneur,
+    # - constituants : code_const, nom, unite
+    
+    resultat = individus[individus["id_individu"] == id_individu].merge(consommations, on="id_individu", how = "left")
+    resultat = resultat.drop(["sexe", "age", "poids_kg", "taille_cm", "id_conso"], axis=1)
+    resultat = resultat.merge(composition, on="code_aliment", how = "left")
+    resultat = resultat.merge(constituants, on="code_const", how = "left")
+    resultat["apport"] = resultat["quantite_g"]*resultat["teneur"]/100
+    resultat = resultat.groupby(["nom"]).sum()
+    resultat = resultat.drop(["id_individu", "code_aliment", "date", "unite", "repas", "quantite_g", "code_const", "teneur"], axis=1)
+    return resultat
+
+# Partie E : Analayse par repas
+def apports_individu_par_repas_merge(id_individu):
+    #colonnes qui nous interessent : 
+    # - individus : id_individu, 
+    # - consommations : id_individu, code_aliment,
+    # - composition : code_aliment, code_const, teneur,
+    # - constituants : code_const, nom, unite
+    
+    resultat = individus[individus["id_individu"] == id_individu].merge(consommations, on="id_individu", how = "left")
+    resultat = resultat.drop(["sexe", "age", "poids_kg", "taille_cm", "id_conso"], axis=1)
+    resultat = resultat.merge(composition, on="code_aliment", how = "left")
+    resultat = resultat.merge(constituants, on="code_const", how = "left")
+    resultat["apport"] = resultat["quantite_g"]*resultat["teneur"]/100
+    resultat = resultat.groupby(["date","repas", "nom"]).sum()
+    resultat = resultat.drop(["id_individu", "code_aliment", "unite", "quantite_g", "code_const", "teneur"], axis=1)
+    return resultat
+
+# Partie F : Questions d'analyse
+
+# Combien aliment diff ?
+def nb_aliment_diff(id_individu):
+    #colonnes qui nous interessent : 
+    # - individus : id_individu, 
+    # - consommations : id_individu, code_aliment,
+
+    resultat = individus[individus["id_individu"] == id_individu].merge(consommations, on="id_individu", how = "left")
+    resultat = resultat.drop(["sexe", "age", "poids_kg", "taille_cm", "id_conso"], axis=1)
+    return resultat.shape[0]
+
+# individu mange plus de bouffe en poids
+
+
+# quel individu à l'apport énergétique le plus élevé
+def comp_apport_energetique():
+    apport = []
+
+    for id_individu in individus["id_individu"]:
+        apport_par_ind = apports_individu_merge(id_individu)
+        apport.append(id_individu)
+
+
+
 if __name__ == "__main__":
     #print(rechercher_aliment("pain"))
     #print(composition_aliment(1001))
     #print(apport_aliment(1001, 60))
-    print(apports_individu(1))
-    print(apports_par_repas(1))
+    #print(apports_individu(1))
+    #print(apports_par_repas(1))
+    print(apports_individu_merge(1))
+    #print(apports_individu_par_repas_merge(1))
+    #print(nb_aliment_diff(1))
