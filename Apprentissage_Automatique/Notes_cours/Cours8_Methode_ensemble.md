@@ -4,6 +4,7 @@
 > Les renvois **(diapo N)** correspondent à la numérotation du fichier fourni.
 >
 > **⚠️ Limites de ce que j'ai pu lire.**
+>
 > 1. Le fichier fourni est une **extraction texte** : les **formules, schémas et exemples chiffrés (images)** n'y figurent pas. Quand une formule n'était pas lisible, je la donne comme **➕ Complément** (théorie standard d'AdaBoost), pas comme contenu de tes diapos.
 > 2. Le texte **s'arrête à la diapo 116 (le bagging)**. Les parties 5 (forêts aléatoires), 6 (XGBoost) et 7 (autres méthodes) annoncées au plan **ne sont pas dans le fichier**. J'en donne une courte présentation en section 12, clairement marquée comme complément hors cours ; envoie-moi la suite si tu veux la version fidèle à tes diapos.
 >
@@ -16,10 +17,10 @@
 
 1. [La grande image](#1-la-grande-image)
 2. [Pourquoi combiner ? La sagesse des foules](#2-pourquoi-combiner--la-sagesse-des-foules)
-3. [Le schéma général d'une méthode d'ensemble](#3-le-schéma-général-dune-méthode-densemble)
+3. [Le schéma général d&#39;une méthode d&#39;ensemble](#3-le-schéma-général-dune-méthode-densemble)
 4. [Le boosting : le principe](#4-le-boosting--le-principe)
-5. [AdaBoost : l'algorithme](#5-adaboost--lalgorithme)
-6. [Exemple chiffré : un tour d'AdaBoost](#6-exemple-chiffré--un-tour-dadaboost)
+5. [AdaBoost : l&#39;algorithme](#5-adaboost--lalgorithme)
+6. [Exemple chiffré : un tour d&#39;AdaBoost](#6-exemple-chiffré--un-tour-dadaboost)
 7. [Le boosting : pourquoi ça marche](#7-le-boosting--pourquoi-ça-marche)
 8. [Bilan pratique, limites et variantes](#8-bilan-pratique-limites-et-variantes)
 9. [Applications : la détection de visages](#9-applications--la-détection-de-visages)
@@ -27,7 +28,7 @@
 11. [Le bagging](#11-le-bagging)
 12. [Pour la suite du cours (hors fichier fourni)](#12-pour-la-suite-du-cours-hors-fichier-fourni)
 13. [Fiche récapitulative](#13-fiche-récapitulative)
-14. [Quiz d'auto-évaluation](#14-quiz-dauto-évaluation)
+14. [Quiz d&#39;auto-évaluation](#14-quiz-dauto-évaluation)
 
 ---
 
@@ -39,22 +40,22 @@ Un seul classifieur, même bien choisi, a ses limites. Si on en **combine plusie
 
 Le cours pose cinq questions (diapo 5) qui structurent tout :
 
-| # | Question | Réponse selon la méthode |
-|---|---|---|
-| 1 | **Quels agents ?** (quels apprenants ?) | Des apprenants « faibles » : arbres, souches… |
-| 2 | **Que s'échangent-ils** si le processus est itératif ? | Boosting : des **poids sur les exemples** |
-| 3 | **Comment combiner** leurs avis ? | Vote (pondéré ou non), moyenne |
-| 4 | **Quelles conditions de convergence ?** | Chaque apprenant doit faire mieux que le hasard |
-| 5 | **Si convergence, vers quoi ?** | Vers un classifieur de grande marge / de faible erreur |
+| # | Question                                                       | Réponse selon la méthode                             |
+| - | -------------------------------------------------------------- | ------------------------------------------------------ |
+| 1 | **Quels agents ?** (quels apprenants ?)                  | Des apprenants « faibles » : arbres, souches…       |
+| 2 | **Que s'échangent-ils** si le processus est itératif ? | Boosting : des **poids sur les exemples**        |
+| 3 | **Comment combiner** leurs avis ?                        | Vote (pondéré ou non), moyenne                       |
+| 4 | **Quelles conditions de convergence ?**                  | Chaque apprenant doit faire mieux que le hasard        |
+| 5 | **Si convergence, vers quoi ?**                          | Vers un classifieur de grande marge / de faible erreur |
 
 Deux grandes familles se dégagent :
 
-| | **Boosting** | **Bagging** |
-|---|---|---|
-| Construction | **Séquentielle** : chaque classifieur dépend des précédents | **Parallèle** : classifieurs indépendants |
-| Données vues | Les mêmes, mais **repondérées** | Des **échantillons bootstrap** différents |
-| Vote | **Pondéré** | **Simple** |
-| Effet principal | Réduit surtout le **biais** (faibles → fort) | Réduit la **variance** |
+|                 | **Boosting**                                                    | **Bagging**                                 |
+| --------------- | --------------------------------------------------------------------- | ------------------------------------------------- |
+| Construction    | **Séquentielle** : chaque classifieur dépend des précédents | **Parallèle** : classifieurs indépendants |
+| Données vues   | Les mêmes, mais **repondérées**                              | Des **échantillons bootstrap** différents |
+| Vote            | **Pondéré**                                                   | **Simple**                                  |
+| Effet principal | Réduit surtout le **biais** (faibles → fort)                  | Réduit la **variance**                     |
 
 ---
 
@@ -65,6 +66,7 @@ Deux grandes familles se dégagent :
 ### 2.1 L'expérience de Galton (diapos 6-7)
 
 *« The wisdom of crowd »* (J. Surowiecki, 2004). En **1906**, Francis Galton (85 ans, à la fois anthropologue, explorateur, statisticien, météorologue…) fait estimer à **787 participants** le poids d'un objet sur un marché. Résultat :
+
 - **le meilleur** participant se trompe de **plus d'un centième** (>1 %) ;
 - **la moyenne** de tous se trompe de **moins d'un millième** (<0,1 %).
 
@@ -73,6 +75,7 @@ La foule, composée de gens **individuellement médiocres**, bat le meilleur ind
 ### 2.2 Pourquoi ça marche (diapo 8)
 
 Les conditions listées par le cours : des « experts faibles » dont les estimations sont **bruitées**, mais :
+
 - **non biaisées** (pas d'erreur systématique dans un sens) ;
 - **symétriques** (autant d'erreurs par excès que par défaut) ;
 - **indépendantes** (l'erreur de l'un n'influence pas celle de l'autre).
@@ -86,8 +89,9 @@ Alors une **combinaison simple, la moyenne**, annule les erreurs.
 ### 2.3 Justifications intuitives (diapo 12)
 
 Le cours cite Dietterich (2000, *Ensemble Methods in Machine Learning*) pour justifier pourquoi un ensemble peut mieux faire qu'un seul modèle. ➕ Les trois raisons classiques de cet article :
+
 1. **Statistique** : avec peu de données, plusieurs hypothèses sont également bonnes sur l'apprentissage ; en les moyennant, on réduit le risque de choisir la mauvaise ;
-2. **Calculatoire** : un algorithme de recherche locale peut se coincer dans un mauvais optimum ; en lançant plusieurs recherches, on approxime mieux la vraie solution ;
+2. **Calculatoire** : un algorithme de recherche locale peut se coincer dans un mauvais optimum ; en lançant plu sieurs recherches, on approxime mieux la vraie solution ;
 3. **Représentationnelle** : la vraie fonction n'est peut-être dans l'espace d'hypothèses d'aucun modèle individuel, mais une **combinaison** peut s'en approcher.
 
 ### 2.4 Des succès applicatifs (diapo 13)
@@ -105,9 +109,12 @@ Le cours cite Dietterich (2000, *Ensemble Methods in Machine Learning*) pour jus
 
 **Prédiction.** Pour un nouvel $x$, on interroge tous les apprenants et on **agrège** leurs réponses :
 
-$$H(x)=\text{sign}\Big(\sum_{t=1}^{T}\alpha_t\,h_t(x)\Big)\qquad(\text{classification binaire, }h_t(x)\in\{-1,+1\})$$
+$$
+H(x)=\text{sign}\Big(\sum_{t=1}^{T}\alpha_t\,h_t(x)\Big)\qquad(\text{classification binaire, }h_t(x)\in\{-1,+1\})
+$$
 
 Pour tout ce cours, deux questions reviennent (diapo 30) :
+
 1. **Comment engendrer des apprenants faibles décorrélés ?**
 2. **Comment combiner leurs prédictions ?**
 
@@ -120,6 +127,7 @@ Pour tout ce cours, deux questions reviennent (diapo 30) :
 ### 4.1 Une illustration frappante (diapos 16-18)
 
 Problème : espace à **10 dimensions** (attributs indépendants, gaussiens), concept cible défini à partir de ces attributs, 2000 exemples d'apprentissage (1000 + / 1000 −), 10 000 de test, apprentissage d'**arbres de décision**. La diapo 17 trace l'**erreur de test** (axe vertical de 0 à 0,5) en fonction du nombre d'étapes (0 à 400) pour trois systèmes : un arbre à un nœud, un arbre à 400 nœuds, et des arbres à un nœud avec boosting. Les courbes sont dans une image, mais le message classique de cette expérience est le suivant (➕ à vérifier sur ta diapo) :
+
 - **un arbre à un nœud** (une « souche » : très faible) → erreur élevée ;
 - **un arbre à 400 nœuds** → mieux, mais limité ;
 - **des souches avec boosting** → l'erreur descend **bien plus bas**, alors que chaque brique reste minuscule.
@@ -134,7 +142,9 @@ On cherche le **meilleur séparateur linéaire** sur 20 points. Le meilleur $h_1
 
 On utilise un **vote pondéré** (diapo 23) :
 
-$$H(x)=\text{sign}\{0{,}549\,h_1(x)+0{,}347\,h_2(x)+0{,}310\,h_3(x)+0{,}406\,h_4(x)+0{,}503\,h_5(x)\}$$
+$$
+H(x)=\text{sign}\{0{,}549\,h_1(x)+0{,}347\,h_2(x)+0{,}310\,h_3(x)+0{,}406\,h_4(x)+0{,}503\,h_5(x)\}
+$$
 
 Chaque $h_t$ est un simple séparateur linéaire, mais leur **combinaison pondérée** trace une frontière beaucoup plus riche (non linéaire).
 
@@ -156,6 +166,7 @@ Chaque $h_t$ est un simple séparateur linéaire, mais leur **combinaison pondé
 Plus précisément : étant donné un algorithme « faible » capable de toujours retourner une hypothèse d'erreur $\le\frac12-\gamma$, un algorithme de boosting peut construire (**de manière prouvée**) une hypothèse d'erreur $\le\varepsilon$, aussi petite qu'on veut.
 
 **Analogie des « courses » (diapo 34).** Un parieur veut battre les bookmakers. Il demande à un expert des **règles empiriques** (« mise sur le cheval qui a gagné la dernière fois »). Chaque règle est faible. Deux questions :
+
 1. **Comment choisir les courses à chaque étape ?** → se concentrer sur les courses les plus **difficiles** (celles où les règles précédentes se trompent le plus).
 2. **Comment combiner les règles ?** → prendre un **vote majoritaire pondéré**.
 
@@ -164,6 +175,7 @@ Plus précisément : étant donné un algorithme « faible » capable de toujour
 **Recette historique (Schapire, 1990).** Elle enchaîne trois apprenants (diapos 27-29). ➕ L'idée (diapos en images) : $h_1$ est appris sur $S$ ; $h_2$ sur un échantillon où **la moitié** des exemples sont mal classés par $h_1$ ; $h_3$ sur les exemples où $h_1$ et $h_2$ **divergent** ; vote majoritaire final.
 
 **Version générale (diapo 31).** On **modifie l'échantillon d'apprentissage à chaque étape** :
+
 - en **diminuant** l'importance des exemples **bien classés** ;
 - en **augmentant** celle des exemples **mal classés**.
 
@@ -180,9 +192,13 @@ La question restante : **de combien ?** C'est ce que règle AdaBoost.
 Entrée : $S=\{(x_1,y_1),\dots,(x_m,y_m)\}$ avec $y_i\in\{-1,+1\}$.
 
 Pour $t=1,\dots,T$ :
+
 1. **Construire une distribution $D_t$** sur $\{1,\dots,m\}$ (les « poids » des exemples) ;
 2. **Trouver l'hypothèse faible** $h_t:X\to\{-1,+1\}$ avec **une petite erreur** $\varepsilon_t$ **sur $D_t$** :
-$$\varepsilon_t=\Pr_{i\sim D_t}\big[h_t(x_i)\ne y_i\big]$$
+
+$$
+\varepsilon_t=\Pr_{i\sim D_t}\big[h_t(x_i)\ne y_i\big]
+$$
 
 Retourner l'hypothèse finale $h_{final}$ (vote pondéré).
 
@@ -192,9 +208,13 @@ Retourner l'hypothèse finale $h_{final}$ (vote pondéré).
 
 Les formules sont des images dans tes diapos 38-39. ➕ Version standard :
 
-$$D_1(i)=\frac1m\qquad\qquad D_{t+1}(i)=\frac{D_t(i)}{Z_t}\times\begin{cases}e^{-\alpha_t}&\text{si }h_t(x_i)=y_i\ \ (\text{bien classé})\\ e^{+\alpha_t}&\text{si }h_t(x_i)\neq y_i\ \ (\text{mal classé})\end{cases}$$
+$$
+D_1(i)=\frac1m\qquad\qquad D_{t+1}(i)=\frac{D_t(i)}{Z_t}\times\begin{cases}e^{-\alpha_t}&\text{si }h_t(x_i)=y_i\ \ (\text{bien classé})\\ e^{+\alpha_t}&\text{si }h_t(x_i)\neq y_i\ \ (\text{mal classé})\end{cases}
+$$
 
-$$\alpha_t=\frac12\ln\frac{1-\varepsilon_t}{\varepsilon_t}\qquad\qquad H(x)=\text{sign}\Big(\sum_{t=1}^T\alpha_t\,h_t(x)\Big)$$
+$$
+\alpha_t=\frac12\ln\frac{1-\varepsilon_t}{\varepsilon_t}\qquad\qquad H(x)=\text{sign}\Big(\sum_{t=1}^T\alpha_t\,h_t(x)\Big)
+$$
 
 où $Z_t$ est une **constante de normalisation** (pour que $D_{t+1}$ somme à 1), comme l'indique la diapo 38. On écrit parfois $D_{t+1}(i)=\frac{D_t(i)}{Z_t}e^{-\alpha_t y_ih_t(x_i)}$.
 
@@ -202,16 +222,17 @@ où $Z_t$ est une **constante de normalisation** (pour que $D_{t+1}$ somme à 1)
 
 **Le poids $\alpha_t$ du vote** (réponse à « comment calculer la pondération $\alpha_t$ ? », diapo 37) :
 
-| Erreur $\varepsilon_t$ | $\alpha_t=\frac12\ln\frac{1-\varepsilon_t}{\varepsilon_t}$ | Interprétation |
-|---|---|---|
-| Proche de 0 (très bon) | grand positif | Il a une **grande voix** |
-| 0,25 | $0{,}549$ | Voix moyenne |
-| 0,5 (hasard) | **0** | Aucune voix : un classifieur au niveau du hasard n'apporte rien |
-| >0,5 | négatif | (Pire que le hasard : on inverse son avis.) |
+| Erreur $\varepsilon_t$ | $\alpha_t=\frac12\ln\frac{1-\varepsilon_t}{\varepsilon_t}$ | Interprétation                                                 |
+| ------------------------ | ------------------------------------------------------------ | --------------------------------------------------------------- |
+| Proche de 0 (très bon)  | grand positif                                                | Il a une **grande voix**                                  |
+| 0,25                     | $0{,}549$                                                  | Voix moyenne                                                    |
+| 0,5 (hasard)             | **0**                                                  | Aucune voix : un classifieur au niveau du hasard n'apporte rien |
+| >0,5                     | négatif                                                     | (Pire que le hasard : on inverse son avis.)                     |
 
 C'est pourquoi on exige que l'apprenant soit **meilleur que le hasard** ($\varepsilon_t<\frac12$) : sans cela, il n'a aucun poids utile.
 
 **La mise à jour des poids** (réponse à « comment passer de $D_t$ à $D_{t+1}$ ? ») :
+
 - exemple **bien classé** → son poids est **multiplié par $e^{-\alpha_t}<1$** (il baisse) ;
 - exemple **mal classé** → son poids est **multiplié par $e^{+\alpha_t}>1$** (il monte).
 
@@ -232,16 +253,17 @@ Reprenons les 20 points, où $h_1$ fait **5 erreurs** : $\varepsilon_1=5/20=0{,}
 3. **Normalisation** : $Z_1=15\times0{,}05\times0{,}577+5\times0{,}05\times1{,}732=0{,}433+0{,}433=0{,}866$.
 4. **Nouveaux poids** :
 
-| Exemples | Poids avant | Poids après | Poids total du groupe |
-|---|---|---|---|
-| 15 bien classés | 0,05 | $0{,}05\times0{,}577/0{,}866=\mathbf{1/30}\approx0{,}033$ | **0,5** |
-| 5 mal classés | 0,05 | $0{,}05\times1{,}732/0{,}866=\mathbf{1/10}=0{,}1$ | **0,5** |
+| Exemples         | Poids avant | Poids après                                                | Poids total du groupe |
+| ---------------- | ----------- | ----------------------------------------------------------- | --------------------- |
+| 15 bien classés | 0,05        | $0{,}05\times0{,}577/0{,}866=\mathbf{1/30}\approx0{,}033$ | **0,5**         |
+| 5 mal classés   | 0,05        | $0{,}05\times1{,}732/0{,}866=\mathbf{1/10}=0{,}1$         | **0,5**         |
 
 > 💡 **À remarquer, c'est très élégant.** Après la mise à jour, les **mal classés pèsent exactement la moitié** du poids total, quelle que soit l'erreur initiale. Du point de vue de $D_2$, **$h_1$ est donc exactement au niveau du hasard** (erreur 0,5). L'apprenant suivant **ne peut pas** se contenter de recopier $h_1$ : il est forcé d'apporter une information nouvelle. C'est ce qui « décorrèle » les apprenants.
 
 Et on recommence : $h_2$ est appris sur $D_2$, etc. Les diapos 47 à 51 déroulent un **exemple jouet** en trois étapes avec **l'hypothèse finale** qui combine les trois. Les diapos 52-53 le refont avec des **arbres de décision / des souches de décision** (« decision stump », d'après Zhou, *Machine Learning*, 2021) sur un jeu de données.
 
 **Effets de deux réglages (diapos 54-55)**, sur le jeu *Iris* :
+
 - **Nombre d'itérations** $T$ (Setosa vs Versicolor) : plus on boucle, plus la frontière se précise ;
 - **Profondeur des arbres** (Versicolor vs Virginica) : des arbres plus profonds donnent des apprenants plus puissants, donc une frontière plus complexe.
 
@@ -255,7 +277,9 @@ Et on recommence : $h_2$ est appris sur $D_2$, etc. Les diapos 47 à 51 déroule
 
 Premier résultat : **l'erreur d'apprentissage de $H$ décroît exponentiellement** avec le nombre d'étapes. ➕ Formule standard (diapo en image) :
 
-$$\text{err}_{S}(H)\ \le\ \prod_{t=1}^T Z_t=\prod_{t=1}^T2\sqrt{\varepsilon_t(1-\varepsilon_t)}\ \le\ \exp\Big(-2\sum_{t=1}^T\gamma_t^2\Big),\qquad\gamma_t=\tfrac12-\varepsilon_t$$
+$$
+\text{err}_{S}(H)\ \le\ \prod_{t=1}^T Z_t=\prod_{t=1}^T2\sqrt{\varepsilon_t(1-\varepsilon_t)}\ \le\ \exp\Big(-2\sum_{t=1}^T\gamma_t^2\Big),\qquad\gamma_t=\tfrac12-\varepsilon_t
+$$
 
 Tant que chaque apprenant bat le hasard d'une marge $\gamma_t\ge\gamma>0$, l'erreur d'apprentissage est $\le e^{-2\gamma^2T}$ : elle **tend vers 0**.
 
@@ -277,7 +301,9 @@ C'est **contraire à l'intuition** : on attendrait du surapprentissage (cf. cour
 
 On mesure cette confiance par la **marge** d'un exemple :
 
-$$\text{marge}(x_i)=\text{poids des classifieurs ayant voté correctement}-\text{poids des classifieurs en erreur}$$
+$$
+\text{marge}(x_i)=\text{poids des classifieurs ayant voté correctement}-\text{poids des classifieurs en erreur}
+$$
 
 (normalisée entre −1 et +1). Marge proche de **+1** : presque tous les votants (pondérés) sont d'accord et ont raison → **prédiction très confiante**. Marge proche de **0** : vote serré. Marge **négative** : exemple mal classé.
 
@@ -318,6 +344,7 @@ Autre lecture : chaque $h_t$ est une **nouvelle caractéristique** (une coordonn
 ### 8.2 Quand ça ne marche pas (diapo 86)
 
 Rappel du **théorème « no free lunch »** : aucun algorithme n'est meilleur partout. Le boosting est **inadapté** quand :
+
 - **pas assez de données** ;
 - **comité trop restreint** (apprenants faibles trop peu variés) ;
 - **apprenants faibles trop stables** (ils donnent toujours la même hypothèse malgré les poids ; l'argument vaut surtout pour le bagging) ;
@@ -326,12 +353,12 @@ Rappel du **théorème « no free lunch »** : aucun algorithme n'est meilleur p
 
 ### 8.3 Avantages et difficultés (diapo 87)
 
-| Avantages | Difficultés |
-|---|---|
-| **Méta-algorithme** : utilise n'importe quel apprenant faible | Difficile d'incorporer des **connaissances a priori** |
-| En principe un seul paramètre ($T$) | Difficile de savoir **comment régulariser** |
-| Facile à programmer | Le **meilleur choix d'apprenant faible n'est pas évident** |
-| **Performances théoriques garanties** | Avec des arbres alignés sur les axes, les **frontières sont très irrégulières** (non interprétables) |
+| Avantages                                                            | Difficultés                                                                                                     |
+| -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Méta-algorithme** : utilise n'importe quel apprenant faible | Difficile d'incorporer des **connaissances a priori**                                                      |
+| En principe un seul paramètre ($T$)                               | Difficile de savoir **comment régulariser**                                                               |
+| Facile à programmer                                                 | Le **meilleur choix d'apprenant faible n'est pas évident**                                                |
+| **Performances théoriques garanties**                         | Avec des arbres alignés sur les axes, les **frontières sont très irrégulières** (non interprétables) |
 
 ### 8.4 Résumé (diapo 88)
 
@@ -343,6 +370,7 @@ Rappel du **théorème « no free lunch »** : aucun algorithme n'est meilleur p
 ### 8.5 Variantes : d'autres fonctions de perte (diapos 89 à 91)
 
 AdaBoost minimise une **perte exponentielle**. On peut en choisir d'autres :
+
 - **LogitBoost** : utilise la **perte logistique (logloss)**. Avantages : **pas de poids exorbitant sur les points aberrants** (la perte logistique croît seulement linéairement pour de grosses erreurs, tandis que l'exponentielle explose), et **possibilité de calculer des probabilités** associées aux étiquettes.
 
 ---
@@ -352,6 +380,7 @@ AdaBoost minimise une **perte exponentielle**. On peut en choisir d'autres :
 *(diapos 92 à 102)*
 
 **Viola & Jones (2004)** : détection robuste de visages **en temps réel** (**15 images/seconde sur un smartphone**), images de 384×288 en niveaux de gris, visages à **toute échelle**. Défis (diapo 95) :
+
 - identifier des **descripteurs** pertinents ;
 - les **calculer rapidement** ;
 - les **organiser** en un système performant : peu de **faux négatifs** (visages ratés) *et* peu de **faux positifs** (fausses alarmes).
@@ -376,13 +405,14 @@ AdaBoost minimise une **perte exponentielle**. On peut en choisir d'autres :
 
 Le gradient boosting apprend, comme AdaBoost, **séquentiellement** une combinaison de classifieurs faibles (en général des **arbres de décision**), mais :
 
-| | **AdaBoost** | **Gradient boosting** |
-|---|---|---|
-| Combinaison | Vote **pondéré** | Somme **non pondérée** (le pas est dans le taux d'apprentissage) |
-| Ce que le suivant apprend | Les **mêmes cibles**, avec des **exemples repondérés** | Les **résidus** (écarts entre valeur désirée et prédiction) |
-| Fonction de perte | **Exponentielle** | **Toute fonction différentiable** (souvent entropique en classification) |
+|                           | **AdaBoost**                                                    | **Gradient boosting**                                                     |
+| ------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Combinaison               | Vote **pondéré**                                              | Somme **non pondérée** (le pas est dans le taux d'apprentissage)        |
+| Ce que le suivant apprend | Les **mêmes cibles**, avec des **exemples repondérés** | Les **résidus** (écarts entre valeur désirée et prédiction)          |
+| Fonction de perte         | **Exponentielle**                                               | **Toute fonction différentiable** (souvent entropique en classification) |
 
 **Comparaison pratique (diapo 103).** Le gradient boosting :
+
 - **gère mieux** les données **complexes** (images, texte) ou **bruitées** qu'AdaBoost ;
 - mais **exige un réglage fin de plusieurs hyperparamètres** et est **davantage susceptible de surapprentissage**.
 
@@ -390,7 +420,9 @@ Le gradient boosting apprend, comme AdaBoost, **séquentiellement** une combinai
 
 Soit le classifieur combiné à l'étape $t$, $h_t$. Le **résidu** sur l'exemple $i$ est $r_i=y_i-h_t(x_i)$. Le nouvel apprenant $f_{t}$ est entraîné à **prédire ce résidu**, puis on corrige :
 
-$$h_{t+1}(x)=h_t(x)+\eta\,f_t(x)$$
+$$
+h_{t+1}(x)=h_t(x)+\eta\,f_t(x)
+$$
 
 où $\eta$ est le **taux d'apprentissage** (*learning rate*).
 
@@ -403,12 +435,12 @@ où $\eta$ est le **taux d'apprentissage** (*learning rate*).
 Données : 5 exemples, 3 attributs, classe $y\in\{0,1\}$ (trois « 1 » et deux « 0 »).
 
 | $x_1$ | $x_2$ | $x_3$ | $y$ |
-|---|---|---|---|
-| 12 | 750 | 4 | 0 |
-| 15 | 900 | 7 | 0 |
-| 18 | 850 | 6 | 1 |
-| 9 | 820 | 12 | 1 |
-| 6 | 790 | 6 | 1 |
+| ------- | ------- | ------- | ----- |
+| 12      | 750     | 4       | 0     |
+| 15      | 900     | 7       | 0     |
+| 18      | 850     | 6       | 1     |
+| 9       | 820     | 12      | 1     |
+| 6       | 790     | 6       | 1     |
 
 **Étape 0 : une prédiction initiale constante.** La proportion de « 1 » est $3/5=0{,}6$ : $h_0(x)=0{,}6$ pour tous. (Via la régression logistique : cote $P(y=1)/P(y=0)=3/2=1{,}5$, d'où $P(y=1)=\frac{1{,}5}{1+1{,}5}=0{,}6$.)
 
@@ -453,14 +485,14 @@ Démo en ligne indiquée en diapo 109 (*Gradient Boosting playground*, A. Rogozh
 
 ### 11.2 Boosting contre bagging
 
-| | Bagging | Boosting |
-|---|---|---|
-| Entraînement | **Parallèle**, indépendant | **Séquentiel**, dépendant |
+|                              | Bagging                                            | Boosting                                                        |
+| ---------------------------- | -------------------------------------------------- | --------------------------------------------------------------- |
+| Entraînement                | **Parallèle**, indépendant                 | **Séquentiel**, dépendant                               |
 | Données de chaque apprenant | **Rééchantillonnage** uniforme avec remise | **Repondération** (ou rééchantillonnage selon $D_t$) |
-| Vote | **Simple** | **Pondéré** par la qualité |
-| Cible principale | **Variance** | **Biais** (et marge) |
-| Apprenant idéal | **Instable et fort** (arbres profonds) | **Faible** (souches) |
-| Sensibilité au bruit | Faible | **Forte** |
+| Vote                         | **Simple**                                   | **Pondéré** par la qualité                             |
+| Cible principale             | **Variance**                                 | **Biais** (et marge)                                      |
+| Apprenant idéal             | **Instable et fort** (arbres profonds)       | **Faible** (souches)                                      |
+| Sensibilité au bruit        | Faible                                             | **Forte**                                                 |
 
 Les diapos 114-115 comparent les deux, avec des **arbres de décision** puis des **souches** (« decision stump »), sur un jeu de données (Zhou, 2021). Avec des **souches** (biais fort, très stables), le bagging n'aide presque pas (toutes les souches se ressemblent) : **le bagging a besoin d'apprenants instables**, c'est l'argument de la diapo 86.
 
@@ -490,27 +522,27 @@ Le plan annonce (diapo 10) :
 
 ## 13. Fiche récapitulative
 
-| Concept | En une phrase |
-|---|---|
-| **Méthode d'ensemble** | Combiner plusieurs apprenants faibles pour faire mieux que chacun |
-| **Sagesse des foules** | Estimations bruitées, non biaisées, symétriques, indépendantes → la moyenne annule les erreurs |
-| **Décorrélation** | Plus les apprenants sont indépendants, plus la variance de l'ensemble diminue |
-| **Apprenant faible** | Erreur $\le\frac12-\gamma$ : juste un peu mieux que le hasard |
-| **Boosting** | Convertir des règles faibles en une règle forte (prouvé, Schapire 1990) |
-| **AdaBoost** | Séquentiel : repondère les exemples (↑ mal classés, ↓ bien classés), vote pondéré par $\alpha_t$ |
-| **$\alpha_t$** | $\frac12\ln\frac{1-\varepsilon_t}{\varepsilon_t}$ : grand si $h_t$ précis, nul si au niveau du hasard |
-| **Poids $D_t$** | Reflète la difficulté qu'ont eue les apprenants précédents sur l'exemple |
-| **Erreur d'apprentissage** | Décroît exponentiellement avec $T$ si chaque $h_t$ bat le hasard |
-| **Énigme** | L'erreur de test ne remonte pas même quand l'apprentissage est à 0 |
-| **Marge** | Poids des votes corrects − poids des votes erronés : confiance de la prédiction |
-| **Explication par la marge** | Boosting augmente la marge → robustesse → bonne généralisation (comme les SVM) |
-| **Limites** | Données bruitées, peu de données, apprenants trop forts ou trop stables |
-| **LogitBoost** | Perte logistique : moins sensible aux aberrants, donne des probabilités |
-| **Viola-Jones** | AdaBoost sélectionne les descripteurs ; cascade pour éliminer vite les négatifs |
-| **Gradient boosting** | Chaque arbre prédit les **résidus** ; $h_{t+1}=h_t+\eta f_t$ ; perte différentiable quelconque |
-| **Bagging** | Bootstrap + vote simple ; réduit la variance sans changer le biais |
-| **Bootstrap** | Tirage avec remise ; ≈ 63 % d'exemples distincts par échantillon |
-| **Bagging vs boosting** | Parallèle/indépendant/variance vs séquentiel/dépendant/biais |
+| Concept                            | En une phrase                                                                                              |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Méthode d'ensemble**      | Combiner plusieurs apprenants faibles pour faire mieux que chacun                                          |
+| **Sagesse des foules**       | Estimations bruitées, non biaisées, symétriques, indépendantes → la moyenne annule les erreurs        |
+| **Décorrélation**          | Plus les apprenants sont indépendants, plus la variance de l'ensemble diminue                             |
+| **Apprenant faible**         | Erreur $\le\frac12-\gamma$ : juste un peu mieux que le hasard                                            |
+| **Boosting**                 | Convertir des règles faibles en une règle forte (prouvé, Schapire 1990)                                 |
+| **AdaBoost**                 | Séquentiel : repondère les exemples (↑ mal classés, ↓ bien classés), vote pondéré par $\alpha_t$ |
+| **$\alpha_t$**             | $\frac12\ln\frac{1-\varepsilon_t}{\varepsilon_t}$ : grand si $h_t$ précis, nul si au niveau du hasard |
+| **Poids $D_t$**            | Reflète la difficulté qu'ont eue les apprenants précédents sur l'exemple                               |
+| **Erreur d'apprentissage**   | Décroît exponentiellement avec $T$ si chaque $h_t$ bat le hasard                                     |
+| **Énigme**                  | L'erreur de test ne remonte pas même quand l'apprentissage est à 0                                       |
+| **Marge**                    | Poids des votes corrects − poids des votes erronés : confiance de la prédiction                         |
+| **Explication par la marge** | Boosting augmente la marge → robustesse → bonne généralisation (comme les SVM)                         |
+| **Limites**                  | Données bruitées, peu de données, apprenants trop forts ou trop stables                                 |
+| **LogitBoost**               | Perte logistique : moins sensible aux aberrants, donne des probabilités                                   |
+| **Viola-Jones**              | AdaBoost sélectionne les descripteurs ; cascade pour éliminer vite les négatifs                         |
+| **Gradient boosting**        | Chaque arbre prédit les **résidus** ; $h_{t+1}=h_t+\eta f_t$ ; perte différentiable quelconque  |
+| **Bagging**                  | Bootstrap + vote simple ; réduit la variance sans changer le biais                                        |
+| **Bootstrap**                | Tirage avec remise ; ≈ 63 % d'exemples distincts par échantillon                                         |
+| **Bagging vs boosting**      | Parallèle/indépendant/variance vs séquentiel/dépendant/biais                                           |
 
 ---
 
@@ -521,256 +553,332 @@ Le plan annonce (diapo 10) :
 ### Partie A : Pourquoi combiner
 
 **Q1.** Que montre l'expérience de Galton (1906) ?
+
 <details><summary>Voir la réponse</summary>
 
 Que la **moyenne des estimations** de 787 participants est bien plus précise (erreur < 1 millième) que **le meilleur participant** (erreur > 1 centième) : des estimateurs individuellement médiocres, combinés, donnent un très bon résultat.
+
 </details>
 
 **Q2.** Quelles sont les trois conditions sur les estimations individuelles pour que la moyenne fonctionne ?
+
 <details><summary>Voir la réponse</summary>
 
 Estimations **non biaisées**, **symétriques**, et **indépendantes**.
+
 </details>
 
 **Q3.** Si l'on moyenne 100 estimateurs indépendants de variance $\sigma^2$ chacun, que vaut la variance de la moyenne ? Que se passe-t-il s'ils sont corrélés ?
+
 <details><summary>Voir la réponse</summary>
 
 $\sigma^2/100$. S'ils sont corrélés (coefficient $\rho$), la variance vaut $\rho\sigma^2+\frac{1-\rho}{100}\sigma^2$ : elle ne descend jamais sous $\rho\sigma^2$. **La décorrélation est essentielle.**
+
 </details>
 
 **Q4.** Cite les deux grandes différences de construction entre bagging et boosting.
+
 <details><summary>Voir la réponse</summary>
 
 Bagging : classifieurs **indépendants/parallèles**, **vote simple**, échantillons bootstrap. Boosting : **séquentiel**, chaque classifieur **dépend des précédents**, exemples **repondérés**, **vote pondéré**.
+
 </details>
 
 ### Partie B : Le boosting
 
 **Q5.** Qu'est-ce qu'un apprenant « faible » ? Pourquoi exige-t-on qu'il batte le hasard ?
+
 <details><summary>Voir la réponse</summary>
 
 Un apprenant d'erreur $\le\frac12-\gamma$ avec $\gamma>0$ : **juste un peu meilleur que le hasard**. Sinon il n'apporte aucune information utile (poids $\alpha_t\le0$) et la combinaison ne progresse pas.
+
 </details>
 
 **Q6.** Que dit Schapire (1990) sur l'apprentissage fort et faible ?
+
 <details><summary>Voir la réponse</summary>
 
 Qu'ils sont **équivalents** : tout apprenant faible peut être **converti en apprenant fort**. Le boosting est la méthode qui le fait.
+
 </details>
 
 **Q7.** Décris le principe du boosting en deux phrases.
+
 <details><summary>Voir la réponse</summary>
 
 On entraîne des apprenants **les uns après les autres**, en **augmentant le poids des exemples mal classés** et en **diminuant celui des bien classés**, pour que chaque nouvel apprenant se concentre sur les cas difficiles. La prédiction finale est un **vote pondéré** des apprenants, les plus précis comptant le plus.
+
 </details>
 
 **Q8.** Dans l'analogie des courses de chevaux, à quoi correspondent le choix des courses et la combinaison des règles ?
+
 <details><summary>Voir la réponse</summary>
 
 Choix des courses = **choix de la distribution $D_t$ sur les exemples** (se concentrer sur les plus difficiles). Combinaison des règles = **vote majoritaire pondéré**.
+
 </details>
 
 **Q9.** Écris la formule du poids $\alpha_t$ d'AdaBoost et donne sa valeur pour $\varepsilon_t=0{,}5$ et $\varepsilon_t=0{,}25$.
+
 <details><summary>Voir la réponse</summary>
 
 $\alpha_t=\frac12\ln\frac{1-\varepsilon_t}{\varepsilon_t}$. Pour $\varepsilon_t=0{,}5$ : $\alpha_t=0$ (aucune voix). Pour $\varepsilon_t=0{,}25$ : $\frac12\ln3\approx0{,}549$.
+
 </details>
 
 **Q10.** Comment AdaBoost met-il à jour le poids d'un exemple bien classé ? d'un exemple mal classé ?
+
 <details><summary>Voir la réponse</summary>
 
 Bien classé : poids **multiplié par $e^{-\alpha_t}<1$** (baisse). Mal classé : **multiplié par $e^{+\alpha_t}>1$** (hausse). Puis division par la constante de normalisation $Z_t$.
+
 </details>
 
 **Q11.** Premier tour d'AdaBoost sur 20 exemples avec 5 erreurs. Quel est le poids de chaque exemple mal classé après mise à jour ? Et de chaque bien classé ?
+
 <details><summary>Voir la réponse</summary>
 
 $\alpha_1=\frac12\ln3\approx0{,}549$, $Z_1\approx0{,}866$. Mal classés : $0{,}05\times1{,}732/0{,}866=\mathbf{0{,}1}$. Bien classés : $0{,}05\times0{,}577/0{,}866\approx\mathbf{0{,}033}$. (Les 5 mal classés pèsent au total 0,5.)
+
 </details>
 
 **Q12.** Pourquoi dit-on qu'après la mise à jour, $h_t$ est « au niveau du hasard » pour $D_{t+1}$ ?
+
 <details><summary>Voir la réponse</summary>
 
 Parce que le poids total des exemples mal classés par $h_t$ devient **exactement 0,5** sous $D_{t+1}$. L'apprenant suivant doit donc apporter une information **nouvelle** : cela décorrèle les apprenants.
+
 </details>
 
 **Q13.** Pourquoi le vote final est-il pondéré et non simple ?
+
 <details><summary>Voir la réponse</summary>
 
 Parce que les apprenants n'ont **pas la même qualité** : un classifieur précis (erreur faible) doit peser davantage qu'un classifieur à peine meilleur que le hasard.
+
 </details>
 
 **Q14.** Que signifie « l'erreur est mesurée sur $D_t$ » ?
+
 <details><summary>Voir la réponse</summary>
 
 L'erreur $\varepsilon_t$ est la **somme des poids** des exemples mal classés, pas leur nombre brut : se tromper sur un exemple difficile (poids élevé) coûte plus cher.
+
 </details>
 
 ### Partie C : Pourquoi ça marche
 
 **Q15.** Que dit le résultat sur l'erreur d'apprentissage d'AdaBoost ?
+
 <details><summary>Voir la réponse</summary>
 
 Si chaque apprenant a une erreur $\le\frac12-\gamma$, l'erreur d'apprentissage de l'hypothèse finale est bornée par $e^{-2\gamma^2T}$ : elle **décroît exponentiellement** avec le nombre d'étapes $T$.
+
 </details>
 
 **Q16.** Quel phénomène « déraisonnable » observe-t-on sur l'erreur de test, et pourquoi est-il surprenant ?
+
 <details><summary>Voir la réponse</summary>
 
 L'erreur d'apprentissage atteint zéro mais l'**erreur de test continue de baisser ou ne remonte pas** (même après 1000 étapes et 2 millions de nœuds). C'est surprenant car on attendrait du **surapprentissage** quand le modèle devient très complexe.
+
 </details>
 
 **Q17.** Définis la marge d'un exemple dans le boosting. Que signifie une marge proche de +1 ?
+
 <details><summary>Voir la réponse</summary>
 
 Marge = **poids des classifieurs ayant voté correctement − poids de ceux en erreur** (normalisé). Proche de +1 : presque tous les votants (pondérés) ont raison → prédiction **très confiante**.
+
 </details>
 
 **Q18.** Résume l'explication du boosting par la maximisation des marges.
+
 <details><summary>Voir la réponse</summary>
 
 À chaque étape, AdaBoost place le plus de poids sur les exemples de **plus faible marge** tout en améliorant celle des autres. L'hypothèse finale, bien que complexe, est **proche d'une hypothèse simple**, de grande marge, donc a une **erreur de généralisation faible**, comme pour les SVM.
+
 </details>
 
 **Q19.** Quel est le parallèle entre le boosting et les SVM ?
+
 <details><summary>Voir la réponse</summary>
 
 Dans les deux cas, la **marge** (et non le nombre de paramètres ou de dimensions) contrôle la capacité et la généralisation. Le boosting construit aussi un **espace de redescription** itératif (chaque $h_t$ est une nouvelle caractéristique) où la séparation est linéaire.
+
 </details>
 
 **Q20.** Cite deux autres perspectives pour expliquer le boosting.
+
 <details><summary>Voir la réponse</summary>
 
 La **théorie des jeux** (inspiration originale), la **minimisation d'une perte surrogée** (exponentielle), la **géométrie de l'information**.
+
 </details>
 
 ### Partie D : Bilan, variantes, applications
 
 **Q21.** Donne quatre avantages pratiques d'AdaBoost.
+
 <details><summary>Voir la réponse</summary>
 
 Très rapide ; simple à programmer ; un seul paramètre ($T$) ; utilisable avec n'importe quel apprenant faible ; peu de surapprentissage grâce aux marges ; adaptable au multi-classes ; détection des aberrants.
+
 </details>
 
 **Q22.** Dans quels cas le boosting échoue-t-il ?
+
 <details><summary>Voir la réponse</summary>
 
 Pas assez de données ; comité trop restreint ; apprenants trop stables ; apprenants **trop forts** (surapprennent seuls) ; surtout **données bruitées** (AdaBoost s'acharne sur les exemples mal étiquetés).
+
 </details>
 
 **Q23.** Pourquoi AdaBoost est-il sensible aux données aberrantes ? Comment LogitBoost y remédie-t-il ?
+
 <details><summary>Voir la réponse</summary>
 
 AdaBoost minimise une perte **exponentielle** : les aberrants (toujours mal classés) voient leur poids **exploser**. **LogitBoost** utilise la **perte logistique**, qui croît seulement linéairement : pas de poids exorbitant, et il donne en plus des **probabilités**.
+
 </details>
 
 **Q24.** Dans la détection de visages de Viola-Jones, à quoi sert AdaBoost et à quoi sert la cascade ?
+
 <details><summary>Voir la réponse</summary>
 
 AdaBoost **sélectionne** parmi plus de 3 milliards de descripteurs une séquence de ~200 (chacun associé à une souche de décision). La **cascade** organise ces détecteurs pour **éliminer le plus tôt possible les négatifs** (fenêtres sans visage) avec des étages très rapides, afin de tenir le temps réel.
+
 </details>
 
 ### Partie E : Gradient boosting
 
 **Q25.** Quelles sont les trois différences entre gradient boosting et AdaBoost ?
+
 <details><summary>Voir la réponse</summary>
 
 1. Chaque modèle apprend les **résidus**, au lieu de changer la distribution des exemples ; 2. la combinaison est une **somme non pondérée** (le pas est dans le taux d'apprentissage) ; 3. la perte peut être **n'importe quelle fonction différentiable** (au lieu de l'exponentielle).
+
 </details>
 
 **Q26.** Dans l'exemple (3 « 1 » et 2 « 0 »), quelle est la prédiction initiale et quels sont les résidus ?
+
 <details><summary>Voir la réponse</summary>
 
 $h_0=3/5=0{,}6$. Résidus $y-h_0$ : $-0{,}6$ pour les « 0 » (×2) et $+0{,}4$ pour les « 1 » (×3).
+
 </details>
 
 **Q27.** Une feuille de l'arbre qui prédit les résidus contient les résidus $-0{,}6$ et $+0{,}4$. Que prédit-elle ?
+
 <details><summary>Voir la réponse</summary>
 
 Leur **moyenne** : $\frac{-0{,}6+0{,}4}{2}=\mathbf{-0{,}1}$.
+
 </details>
 
 **Q28.** Écris la mise à jour du gradient boosting et explique le rôle du taux d'apprentissage $\eta$.
+
 <details><summary>Voir la réponse</summary>
 
 $h_{t+1}(x)=h_t(x)+\eta f_t(x)$. $\eta$ règle l'**amplitude de la correction** : petit = apprentissage lent et prudent (plus d'arbres nécessaires, moins de surapprentissage) ; grand = rapide mais risqué.
+
 </details>
 
 **Q29.** Cite les quatre hyperparamètres du gradient boosting vus en cours.
+
 <details><summary>Voir la réponse</summary>
 
 Taux d'apprentissage ; nombre d'arbres ; profondeur des arbres ; taux de sous-échantillonnage.
+
 </details>
 
 ### Partie F : Bagging
 
 **Q30.** Décris les trois étapes du bagging.
+
 <details><summary>Voir la réponse</summary>
 
 1. Générer $k$ échantillons par **tirage avec remise** dans l'échantillon d'apprentissage ; 2. entraîner un classifieur sur chacun avec le **même algorithme** ; 3. prédire par **vote simple** (ou moyenne).
+
 </details>
 
 **Q31.** Quelle proportion d'exemples distincts contient en moyenne un échantillon bootstrap ?
+
 <details><summary>Voir la réponse</summary>
 
 Environ **63 %** : la probabilité qu'un exemple ne soit **pas** tiré est $(1-1/m)^m\to e^{-1}\approx0{,}37$.
+
 </details>
 
 **Q32.** Que réduit principalement le bagging : le biais ou la variance ? Quel type d'apprenant lui convient ?
+
 <details><summary>Voir la réponse</summary>
 
 La **variance**, en laissant le biais inchangé. Il convient à des apprenants **instables** à faible biais (par exemple des arbres profonds) ; avec des apprenants très stables (souches), il n'apporte presque rien.
+
 </details>
 
 **Q33.** Compare bagging et boosting sur cinq critères (construction, données, vote, cible, sensibilité au bruit).
+
 <details><summary>Voir la réponse</summary>
 
 Bagging : parallèle, rééchantillonnage bootstrap, vote simple, réduit la variance, peu sensible au bruit. Boosting : séquentiel, repondération des exemples, vote pondéré, réduit surtout le biais (et augmente la marge), **sensible au bruit**.
+
 </details>
 
 ### Partie G : Synthèse
 
 **Q34.** Pourquoi dit-on que le boosting peut utiliser « n'importe quel apprenant faible » ? Est-ce toujours une bonne idée de prendre un apprenant très puissant ?
+
 <details><summary>Voir la réponse</summary>
 
 C'est un **méta-algorithme** : il ne dépend que de la capacité de l'apprenant à produire une hypothèse meilleure que le hasard sur la distribution $D_t$. Mais un apprenant **trop fort** peut surapprendre par lui-même (erreur d'apprentissage nulle dès la première étape, plus rien à repondérer) : on préfère des apprenants faibles (souches, arbres peu profonds).
+
 </details>
 
 **Q35 (synthèse).** Explique à un ami, sans formule, pourquoi combiner plusieurs modèles médiocres peut battre un bon modèle, et la différence entre bagging et boosting.
+
 <details><summary>Voir la réponse</summary>
 
 Comme la foule de Galton : chaque modèle se trompe, mais **pas de la même façon** ; en combinant leurs avis, les erreurs se compensent. Dans le **bagging**, on entraîne beaucoup de modèles **indépendants** sur des versions rééchantillonnées des données et on **vote** : cela stabilise les prédictions (réduit la variance). Dans le **boosting**, on entraîne les modèles **à la suite** : chacun se concentre sur les exemples que les précédents ont ratés, et les modèles les plus fiables ont un vote plus fort. On transforme ainsi des règles à peine meilleures que le hasard en un classifieur très précis, avec une grande marge, ce qui explique sa bonne généralisation.
+
 </details>
 
 ### Partie H : Facultatif, hors fichier fourni (section 12)
 
 **Q36.** Quelle astuce supplémentaire distingue une forêt aléatoire d'un simple bagging d'arbres ?
+
 <details><summary>Voir la réponse</summary>
 
 À chaque nœud, on ne considère qu'un **sous-ensemble aléatoire d'attributs** pour choisir la coupure, ce qui **décorrèle** davantage les arbres.
+
 </details>
 
 **Q37.** À quelle méthode correspond XGBoost dans la famille des méthodes d'ensemble ?
+
 <details><summary>Voir la réponse</summary>
 
 À une implémentation très optimisée du **gradient boosting d'arbres**, avec une **régularisation** de la complexité des arbres.
+
 </details>
 
 **Q38.** Pourquoi une forêt aléatoire peut-elle être meilleure qu'un bagging d'arbres classique ?
+
 <details><summary>Voir la réponse</summary>
 
 Parce que les arbres sont **moins corrélés** entre eux : la variance de la moyenne baisse davantage (cf. $\rho\sigma^2+\frac{1-\rho}{k}\sigma^2$).
+
 </details>
 
 ---
 
 ### Barème indicatif (35 questions obligatoires)
 
-| Score | Niveau |
-|---|---|
-| 0 – 14 | À retravailler : relis les sections 2, 4 et 5 |
-| 15 – 24 | Bases acquises : approfondis la marge (7) et le gradient boosting (10) |
-| 25 – 31 | Bonne maîtrise |
+| Score    | Niveau                                                                      |
+| -------- | --------------------------------------------------------------------------- |
+| 0 – 14  | À retravailler : relis les sections 2, 4 et 5                              |
+| 15 – 24 | Bases acquises : approfondis la marge (7) et le gradient boosting (10)      |
+| 25 – 31 | Bonne maîtrise                                                             |
 | 32 – 35 | Excellent ! Tu peux expliquer les méthodes d'ensemble à quelqu'un d'autre |
 
 > 💡 **Fil rouge de révision.** *Modèles faibles et décorrélés → on combine → bagging : parallèle, vote simple, réduit la variance → boosting : séquentiel, repondère les exemples difficiles, vote pondéré, augmente la marge → gradient boosting : chaque arbre corrige les résidus.*
