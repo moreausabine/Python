@@ -14,6 +14,7 @@
 5. [Cheatsheet PyTorch](#5-cheatsheet-pytorch)
 
 **Fil rouge du cours :** PyTorch est une boîte à outils qui fait deux choses.
+
 1. Il manipule des tableaux de nombres (*tensors*) très efficacement, sur CPU ou GPU.
 2. Il calcule automatiquement des dérivées (*gradients*), ce qui permet d'entraîner des modèles.
 
@@ -27,10 +28,10 @@ Tout le reste (réseaux de neurones, optimiseurs…) se construit sur ces deux b
 
 **L'idée.** Quand on fait de la data science, on a presque toujours un tableau de données :
 
-| | surface | nb pièces | prix |
-|---|---|---|---|
-| maison 1 | 80 | 3 | 250 |
-| maison 2 | 120 | 5 | 400 |
+|          | surface | nb pièces | prix |
+| -------- | ------- | ---------- | ---- |
+| maison 1 | 80      | 3          | 250  |
+| maison 2 | 120     | 5          | 400  |
 
 - une **ligne = un individu** (une maison, une plante, un patient…)
 - une **colonne = un descripteur** (une caractéristique mesurée)
@@ -46,12 +47,14 @@ Chaque case contient un nombre d'un type précis : `torch.float32`, `torch.int64
 
 **b) Philosophie : opérateurs de haut niveau, pas de boucles.**
 En Python pur, pour additionner deux listes élément par élément, on écrirait une boucle `for`. Avec PyTorch, on écrit `a + b` et c'est tout.
+
 - C'est plus **lisible** (une ligne au lieu de cinq).
 - C'est beaucoup plus **rapide** : la boucle est exécutée en code C/C++ optimisé (voire en parallèle sur GPU), pas par l'interpréteur Python.
 - Le cours le résume ainsi : *penser en « motifs » (opérations sur des blocs de données) plutôt qu'en « boucles » (case par case)*.
 
 **c) Tout est `torch`.**
 On n'utilise pas des tableaux NumPy ou des listes Python pour calculer, mais uniquement des `torch.Tensor`. Deux raisons :
+
 - le **passage sur GPU** est simple (on déplace le tensor, et les calculs suivent) ;
 - le **calcul de gradient** est possible (c'est la fonctionnalité qui rend PyTorch si utile, voir partie 2).
 
@@ -70,6 +73,7 @@ zeros_like_x = torch.zeros_like(x)   # matrice de 0 ayant la même forme (et typ
 ```
 
 **À quoi ça sert ?**
+
 - `zeros` / `ones` : initialiser un accumulateur, un masque, etc.
 - `rand` : initialiser aléatoirement (très utile pour les poids d'un modèle).
 - `zeros_like(x)` : « fais-moi un tableau de la même taille que `x` » sans avoir à recopier ses dimensions.
@@ -93,14 +97,15 @@ data : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
 Le tensor est en fait un petit « dossier » avec 4 champs :
 
-| Champ | Valeur dans l'exemple | Signification |
-|---|---|---|
-| `data` | pointeur vers la suite 0…11 | où sont les nombres |
-| `data type` | entier sur 8 octets | comment lire chaque case |
-| `shape` | `(4, 3)` | 4 lignes, 3 colonnes |
-| `strides` | `(24, 8)` | de combien d'octets avancer pour passer à la case suivante |
+| Champ         | Valeur dans l'exemple        | Signification                                               |
+| ------------- | ---------------------------- | ----------------------------------------------------------- |
+| `data`      | pointeur vers la suite 0…11 | où sont les nombres                                        |
+| `data type` | entier sur 8 octets          | comment lire chaque case                                    |
+| `shape`     | `(4, 3)`                   | 4 lignes, 3 colonnes                                        |
+| `strides`   | `(24, 8)`                  | de combien d'octets avancer pour passer à la case suivante |
 
 **Comprendre les strides :**
+
 - Pour aller à la **colonne suivante** : on avance de 1 élément, soit 8 octets.
 - Pour aller à la **ligne suivante** : on saute 3 éléments (une ligne entière), soit 3 × 8 = **24 octets**.
 
@@ -124,6 +129,7 @@ x[0, [0, 2]]   # ligne 0, colonnes 0 et 2       -> tensor([2, 6])
 > Même une case seule est un tensor (de dimension 0). Pour récupérer le nombre Python, utiliser `.item()`.
 
 **La syntaxe générale du slicing : `début:fin:pas`**
+
 - le début est **inclus**, la fin est **exclue** ;
 - chaque élément est optionnel.
 
@@ -153,10 +159,10 @@ a = x @ torch.tensor([[1], [2], [3]])    # [[28], [42]]
 
 **Distinction fondamentale à retenir :**
 
-| Opérateur | Nom | Exemple |
-|---|---|---|
-| `*` | produit **terme à terme** (Hadamard) | `[[2,4]] * [[3,5]] = [[6,20]]` |
-| `@` | produit **matriciel** (lignes × colonnes) | forme `(n,p) @ (p,q) -> (n,q)` |
+| Opérateur | Nom                                              | Exemple                          |
+| ---------- | ------------------------------------------------ | -------------------------------- |
+| `*`      | produit **terme à terme** (Hadamard)      | `[[2,4]] * [[3,5]] = [[6,20]]` |
+| `@`      | produit **matriciel** (lignes × colonnes) | forme `(n,p) @ (p,q) -> (n,q)` |
 
 Pour `@`, le nombre de colonnes de la première matrice doit être égal au nombre de lignes de la seconde. Ici : `(2,3) @ (3,1) -> (2,1)`. On a calculé 2·1 + 4·2 + 6·3 = 28 et 3·1 + 6·2 + 9·3 = 42.
 
@@ -179,18 +185,21 @@ On s'en servira pour ajouter le biais `b` dans la régression linéaire (partie 
 **Deux manières de faire un calcul :**
 
 1. **Classique** : le résultat est stocké dans un **nouvel** objet. L'original n'est pas touché.
+
 ```python
 b = torch.sin(a)    # b est nouveau, a inchangé
 c = a + b           # c est nouveau
 ```
 
 2. **In place** (« sur place ») : le résultat **écrase** l'objet d'origine. Convention : un **underscore `_`** à la fin du nom.
+
 ```python
 torch.sin_(a)       # a est modifié (a = sin(a))
 a.add_(b)           # a est modifié (a = a + b)
 ```
 
 **Pourquoi deux versions ?**
+
 - In place : on **économise de la mémoire** (pas de nouvelle matrice allouée). Important avec de grosses données.
 - Classique : plus **sûr**. Si vous modifiez `a` sur place, vous perdez sa valeur d'origine, ce qui peut poser problème (notamment pour le calcul de gradient, où PyTorch a parfois besoin des valeurs d'origine).
 
@@ -215,6 +224,7 @@ li = x[:, ::2].sum(1)   # -> [8, 12]
 ```
 
 **Comment ne pas se tromper :**
+
 - `axis=1` : on **parcourt les colonnes** (flèche horizontale sur le schéma) et on les écrase → il reste une valeur **par ligne**.
 - `axis=0` : on **parcourt les lignes** (flèche verticale) et on les écrase → il reste une valeur **par colonne**.
 - Sans argument : tout est écrasé en un seul nombre.
@@ -226,6 +236,7 @@ Même logique pour `mean`, `min`, `max`, `std`, `prod`…
 ### 1.8 `squeeze` / `unsqueeze` : gérer les dimensions
 
 **Rappel des dimensions :**
+
 - une ligne de données = 1D (vecteur)
 - une image = 2D (par canal)
 - un corpus d'images = 3D ou plus
@@ -254,6 +265,7 @@ print(b.shape)   # torch.Size([1, 3, 226, 226])   <- batch de 1 image
 Entraîner un modèle, c'est **trouver les paramètres** qui rendent une **fonction de coût** (l'erreur) la plus petite possible.
 
 Le **gradient** d'une fonction indique, pour chaque paramètre, **de combien le coût change si on bouge ce paramètre un tout petit peu**. C'est la pente.
+
 - pente positive → si on augmente le paramètre, le coût monte → il faut **le diminuer** ;
 - pente négative → il faut **l'augmenter**.
 
@@ -280,6 +292,7 @@ print("dz/da :", a.grad.item(), " dz/db :", b.grad.item())
 ```
 
 **Ce qui se passe, étape par étape :**
+
 1. `requires_grad=True` dit : « surveille tout calcul qui implique ce tensor ».
 2. Quand on écrit `z = 2*a + b`, PyTorch ne se contente pas de calculer la valeur de `z` : il **mémorise la recette** (une multiplication puis une addition). C'est le **graphe de calcul**.
 3. `z.backward()` remonte cette recette à l'envers et applique la règle de dérivation en chaîne.
@@ -296,13 +309,21 @@ En pratique, les paramètres sont des vecteurs ou des matrices (et non de simple
 **Règle essentielle :** le gradient a **exactement la même forme** que le tensor d'origine.
 
 Si
-$$A = \begin{pmatrix} a_{11} & a_{12} & \dots \\ a_{21} & a_{22} & \dots \end{pmatrix}, \qquad L = f(A)$$
+
+$$
+A = \begin{pmatrix} a_{11} & a_{12} & \dots \\ a_{21} & a_{22} & \dots \end{pmatrix}, \qquad L = f(A)
+$$
+
 alors
-$$A.\text{grad} = \begin{pmatrix} \frac{\partial L}{\partial a_{11}} & \frac{\partial L}{\partial a_{12}} & \dots \\ \frac{\partial L}{\partial a_{21}} & \frac{\partial L}{\partial a_{22}} & \dots \end{pmatrix}$$
+
+$$
+A.\text{grad} = \begin{pmatrix} \frac{\partial L}{\partial a_{11}} & \frac{\partial L}{\partial a_{12}} & \dots \\ \frac{\partial L}{\partial a_{21}} & \frac{\partial L}{\partial a_{22}} & \dots \end{pmatrix}
+$$
 
 Chaque case du gradient dit : « si je bouge **cette** case de `A`, voilà comment `L` varie ».
 
 **Conditions :**
+
 - **`L` doit être un scalaire** (un seul nombre). C'est logique : on minimise **un** coût. Si on avait un vecteur de coûts, la question « dans quel sens descendre ? » n'aurait pas de réponse unique. En pratique, on calcule une erreur par individu, puis on prend la **moyenne** (ou la somme).
 - On déclenche le calcul avec `L.backward()`.
 
@@ -311,12 +332,14 @@ Chaque case du gradient dit : « si je bouge **cette** case de `A`, voilà comme
 ### 2.4 Pièges de syntaxe une fois le gradient activé
 
 **Lire les valeurs sans le graphe :**
+
 ```python
 b = torch.tensor(2., requires_grad=True)
 b.data          # ok : accède à la valeur brute, sans le graphe
 b.grad.data     # ok : idem pour le gradient
 b.item()        # ok pour un tensor à un seul élément
 ```
+
 La slide indique que `print(b)` provoque une erreur « ambiguë ». Dans les versions récentes de PyTorch, `print(b)` fonctionne et affiche `tensor(2., requires_grad=True)`. Retenez surtout qu'un tensor avec gradient n'est plus un simple tableau de nombres : il est relié à un graphe.
 
 **Mise à jour des paramètres : couper le graphe avec `torch.no_grad()`.**
@@ -330,6 +353,7 @@ with torch.no_grad():
 ```
 
 **Pourquoi `no_grad` ?**
+
 - La mise à jour des paramètres n'est **pas** une opération qu'on veut dériver. On ne veut pas que PyTorch l'ajoute au graphe.
 - Sans `no_grad`, il mémoriserait inutilement ces opérations (gaspillage de mémoire et de temps), et PyTorch refuse d'ailleurs de modifier sur place un paramètre avec `requires_grad=True` en dehors de ce bloc.
 - `EPS` (epsilon) est le **pas d'apprentissage** (*learning rate*) : la taille du pas qu'on fait dans la direction opposée au gradient.
@@ -352,10 +376,12 @@ z.backward()          # a.grad = 4, b.grad = 2   <- accumulation !
 ```
 
 **Pourquoi ce choix de conception ?**
+
 - On peut avoir **plusieurs fonctions de coût** (ou plusieurs morceaux de données) et vouloir **additionner** leurs gradients : l'accumulation permet de le faire naturellement.
 - Après `backward()`, PyTorch **libère le graphe** pour économiser la mémoire ; c'est pourquoi il faut redéfinir `z` avant de rappeler `backward()`.
 
 **Conséquence pratique (à ne jamais oublier) :** dans une boucle d'apprentissage, il faut **remettre les gradients à zéro** après chaque mise à jour, sinon les gradients de toutes les itérations s'additionnent et l'apprentissage est faussé :
+
 ```python
 w.grad.zero_()
 b.grad.zero_()
@@ -393,24 +419,33 @@ housing_y = torch.tensor(housing['target'], dtype=torch.float)
 ### 3.2 Estimateur linéaire
 
 **Le modèle :** pour un individu décrit par un vecteur **x**, la prédiction est
-$$\hat{y} = \langle \mathbf{w}, \mathbf{x} \rangle + b = w_1 x_1 + w_2 x_2 + \dots + b$$
+
+$$
+\hat{y} = \langle \mathbf{w}, \mathbf{x} \rangle + b = w_1 x_1 + w_2 x_2 + \dots + b
+$$
+
 - **w** : un poids par descripteur (l'importance de chaque caractéristique)
 - **b** : le biais (valeur de base quand tout est nul)
 
 **Déclarer les paramètres avec gradient activé :**
+
 ```python
 w = torch.randn(1, housing_x.size(1), requires_grad=True)   # forme (1, nb_descripteurs)
 b = torch.randn(1, 1,               requires_grad=True)     # forme (1, 1)
 ```
+
 - `randn` : tirage aléatoire selon une loi normale (valeurs de départ).
 - `housing_x.size(1)` : nombre de colonnes = nombre de descripteurs.
 - `requires_grad=True` : ces paramètres sont ceux qu'on va **apprendre**.
 
 **Appliquer le modèle à tous les individus d'un coup :**
+
 ```python
 y_hat = (x @ w.T) + b
 ```
+
 Décortiquons les formes, pour `n` individus et `d` descripteurs :
+
 - `x` : `(n, d)`
 - `w.T` : `(d, 1)` (la transposée de `(1, d)`)
 - `x @ w.T` : `(n, 1)` → une prédiction par individu
@@ -421,7 +456,10 @@ Décortiquons les formes, pour `n` individus et `d` descripteurs :
 ### 3.3 Fonction de coût
 
 On mesure l'erreur par les **moindres carrés** : pour chaque individu, on prend la différence entre la vérité `y` et la prédiction `ŷ`, on l'élève au carré, puis on moyenne.
-$$\mathcal{L} = \frac{1}{n}\sum_i \left( y_i - \hat{y}_i \right)^2$$
+
+$$
+\mathcal{L} = \frac{1}{n}\sum_i \left( y_i - \hat{y}_i \right)^2
+$$
 
 Le carré permet d'avoir une erreur toujours positive et de pénaliser davantage les grosses erreurs. Le résultat est bien un **scalaire**, donc on peut appeler `.backward()`.
 
@@ -440,14 +478,15 @@ x, w ──► s = <w, x> ──► ŷ = s + b ──► d = y − ŷ ──► 
 
 **Calcul à la main, étape par étape (pour comprendre ce que fait `backward()`) :**
 
-| Étape | Dérivée locale | Valeur |
-|---|---|---|
-| `e = d²` | ∂e/∂d | **2d** |
-| `d = y − ŷ` | ∂d/∂ŷ | **−1** |
-| `ŷ = s + b` | ∂ŷ/∂s et ∂ŷ/∂b | **1** et **1** |
-| `s = <w, x>` | ∇ₓs et ∇_w s | **w** et **x** |
+| Étape          | Dérivée locale     | Valeur                     |
+| --------------- | -------------------- | -------------------------- |
+| `e = d²`     | ∂e/∂d              | **2d**               |
+| `d = y − ŷ` | ∂d/∂ŷ             | **−1**              |
+| `ŷ = s + b`  | ∂ŷ/∂s et ∂ŷ/∂b | **1** et **1** |
+| `s = <w, x>`  | ∇ₓs et ∇_w s      | **w** et **x** |
 
 On **multiplie** les dérivées locales le long du chemin :
+
 - ∂e/∂b = (∂e/∂d)(∂d/∂ŷ)(∂ŷ/∂b) = 2d · (−1) · 1 = **−2d**
 - ∇_w e = 2d · (−1) · 1 · **x** = **−2d·x**
 - ∇ₓ e = **−2d·w**
@@ -455,6 +494,7 @@ On **multiplie** les dérivées locales le long du chemin :
 Ces trois formules correspondent à celles écrites en rouge sur la slide.
 
 **Ce qu'il faut retenir (encadré de la slide) :**
+
 - Un **graphe de calcul** est un **graphe orienté** qui décrit l'enchaînement des opérations.
 - Les **sources** sont les variables d'entrée ; le résultat final est le nœud de sortie.
 - Chaque opération élémentaire connaît sa propre dérivée. Le graphe permet donc de **calculer le gradient de la sortie par rapport à chaque variable d'entrée**, en combinant ces dérivées. C'est exactement ce que PyTorch fait pour nous, même pour des modèles avec des millions de paramètres.
@@ -521,6 +561,7 @@ forward  →  loss  →  backward  →  update (no_grad)  →  zero_grad
 ## 4. Conclusion : PyTorch dans le paysage
 
 ### PyTorch, c'est…
+
 - un **framework** de développement et d'apprentissage de réseaux profonds sur **CPU et GPU** ;
 - une **architecture modulaire** (des « contenants » et des « conteneurs ») qui permet de construire des architectures **flexibles** ;
 - la **différentiation automatique** : **Autograd** (cf. partie 2) ;
@@ -529,11 +570,11 @@ forward  →  loss  →  backward  →  update (no_grad)  →  zero_grad
 
 ### PyTorch vs TensorFlow
 
-| | PyTorch | TensorFlow |
-|---|---|---|
-| Ancienneté / industrie | plus récent, moins intégré dans l'industrie | plus ancien, très intégré |
-| Déploiement, rapidité, processus industriel | | ✔ |
-| Flexibilité, prototypage, simplicité | ✔ | |
+|                                               | PyTorch                                        | TensorFlow                   |
+| --------------------------------------------- | ---------------------------------------------- | ---------------------------- |
+| Ancienneté / industrie                       | plus récent, moins intégré dans l'industrie | plus ancien, très intégré |
+| Déploiement, rapidité, processus industriel |                                                | ✔                           |
+| Flexibilité, prototypage, simplicité        | ✔                                             |                              |
 
 Les deux frameworks ont tendance à **se rapprocher** en termes de fonctionnalités ces derniers temps.
 
@@ -543,30 +584,30 @@ Les deux frameworks ont tendance à **se rapprocher** en termes de fonctionnalit
 
 ### Création de tensors
 
-| Commande | Effet |
-|---|---|
-| `torch.tensor([[1,2],[3,4]])` | tensor à partir de listes Python |
-| `torch.tensor(data, dtype=torch.float)` | idem avec type imposé |
-| `torch.zeros(n, m)` | matrice de 0 |
-| `torch.ones(n, m)` | matrice de 1 |
-| `torch.rand(n, m)` | uniforme sur [0, 1[ |
-| `torch.randn(n, m)` | loi normale (moyenne 0, écart-type 1) |
-| `torch.zeros_like(x)` / `torch.ones_like(x)` | même forme que `x` |
-| `torch.arange(0, 10, 2)` | `[0, 2, 4, 6, 8]` |
-| `torch.linspace(0, 1, 5)` | 5 valeurs régulièrement espacées de 0 à 1 |
-| `torch.eye(n)` | matrice identité |
+| Commande                                         | Effet                                         |
+| ------------------------------------------------ | --------------------------------------------- |
+| `torch.tensor([[1,2],[3,4]])`                  | tensor à partir de listes Python             |
+| `torch.tensor(data, dtype=torch.float)`        | idem avec type imposé                        |
+| `torch.zeros(n, m)`                            | matrice de 0                                  |
+| `torch.ones(n, m)`                             | matrice de 1                                  |
+| `torch.rand(n, m)`                             | uniforme sur [0, 1[                           |
+| `torch.randn(n, m)`                            | loi normale (moyenne 0, écart-type 1)        |
+| `torch.zeros_like(x)` / `torch.ones_like(x)` | même forme que `x`                         |
+| `torch.arange(0, 10, 2)`                       | `[0, 2, 4, 6, 8]`                           |
+| `torch.linspace(0, 1, 5)`                      | 5 valeurs régulièrement espacées de 0 à 1 |
+| `torch.eye(n)`                                 | matrice identité                             |
 
 ### Inspecter un tensor
 
-| Commande | Effet |
-|---|---|
-| `x.shape` ou `x.size()` | forme |
-| `x.size(1)` | taille de la dimension 1 |
-| `x.dtype` | type des éléments |
-| `x.ndim` | nombre de dimensions |
-| `x.numel()` | nombre total d'éléments |
-| `x.item()` | valeur Python (tensor à 1 élément) |
-| `x.device` | où il est stocké (`cpu` / `cuda`) |
+| Commande                    | Effet                                   |
+| --------------------------- | --------------------------------------- |
+| `x.shape` ou `x.size()` | forme                                   |
+| `x.size(1)`               | taille de la dimension 1                |
+| `x.dtype`                 | type des éléments                     |
+| `x.ndim`                  | nombre de dimensions                    |
+| `x.numel()`               | nombre total d'éléments               |
+| `x.item()`                | valeur Python (tensor à 1 élément)   |
+| `x.device`                | où il est stocké (`cpu` / `cuda`) |
 
 ### Types courants
 
@@ -579,27 +620,27 @@ x.to(torch.int16)         # convertir vers un type donné
 
 ### Indexation et slicing
 
-| Commande | Effet |
-|---|---|
-| `x[i, j]` | élément (ligne `i`, colonne `j`) |
-| `x[i]` ou `x[i, :]` | ligne `i` |
-| `x[:, j]` | colonne `j` |
-| `x[:, [0, 2]]` | colonnes 0 et 2 |
-| `x[a:b]` | lignes de `a` à `b-1` |
-| `x[::2]` | une ligne sur deux |
-| `x[x > 0]` | tous les éléments > 0 (masque booléen) |
+| Commande                | Effet                                     |
+| ----------------------- | ----------------------------------------- |
+| `x[i, j]`             | élément (ligne `i`, colonne `j`)    |
+| `x[i]` ou `x[i, :]` | ligne `i`                               |
+| `x[:, j]`             | colonne `j`                             |
+| `x[:, [0, 2]]`        | colonnes 0 et 2                           |
+| `x[a:b]`              | lignes de `a` à `b-1`                |
+| `x[::2]`              | une ligne sur deux                        |
+| `x[x > 0]`            | tous les éléments > 0 (masque booléen) |
 
 Syntaxe : `début:fin(exclue):pas`
 
 ### Opérations
 
-| Commande | Effet |
-|---|---|
-| `x + y`, `x - y`, `x * y`, `x / y`, `x ** 2` | terme à terme (avec broadcasting) |
-| `x @ y` ou `torch.matmul(x, y)` | produit matriciel |
-| `x.T` | transposée |
-| `torch.sin(x)`, `torch.exp(x)`, `torch.log(x)`, `torch.sqrt(x)` | fonctions usuelles |
-| `torch.abs(x)`, `torch.clamp(x, min, max)` | valeur absolue, bornage |
+| Commande                                                                | Effet                              |
+| ----------------------------------------------------------------------- | ---------------------------------- |
+| `x + y`, `x - y`, `x * y`, `x / y`, `x ** 2`                  | terme à terme (avec broadcasting) |
+| `x @ y` ou `torch.matmul(x, y)`                                     | produit matriciel                  |
+| `x.T`                                                                 | transposée                        |
+| `torch.sin(x)`, `torch.exp(x)`, `torch.log(x)`, `torch.sqrt(x)` | fonctions usuelles                 |
+| `torch.abs(x)`, `torch.clamp(x, min, max)`                          | valeur absolue, bornage            |
 
 ### Opérations in place (suffixe `_`)
 
@@ -612,38 +653,38 @@ torch.sin_(x)   # x = sin(x)
 
 ### Agrégations
 
-| Commande | Effet |
-|---|---|
-| `x.sum()` | somme totale |
-| `x.sum(0)` | somme par colonne (dimension 0 écrasée) |
-| `x.sum(1)` | somme par ligne (dimension 1 écrasée) |
-| `x.mean()`, `x.std()`, `x.min()`, `x.max()` | idem avec d'autres fonctions |
-| `x.argmax(1)` | indice du max sur chaque ligne |
-| `x.sum(1, keepdim=True)` | garde la dimension (forme `(n, 1)` et non `(n,)`) |
+| Commande                                            | Effet                                                 |
+| --------------------------------------------------- | ----------------------------------------------------- |
+| `x.sum()`                                         | somme totale                                          |
+| `x.sum(0)`                                        | somme par colonne (dimension 0 écrasée)             |
+| `x.sum(1)`                                        | somme par ligne (dimension 1 écrasée)               |
+| `x.mean()`, `x.std()`, `x.min()`, `x.max()` | idem avec d'autres fonctions                          |
+| `x.argmax(1)`                                     | indice du max sur chaque ligne                        |
+| `x.sum(1, keepdim=True)`                          | garde la dimension (forme `(n, 1)` et non `(n,)`) |
 
 ### Changer la forme
 
-| Commande | Effet |
-|---|---|
-| `x.unsqueeze(0)` | ajoute une dimension de taille 1 en position 0 |
-| `x.squeeze()` | supprime les dimensions de taille 1 |
-| `x.reshape(2, 6)` ou `x.view(2, 6)` | change la forme (même nombre d'éléments) |
-| `x.reshape(-1)` | aplatit en vecteur |
-| `x.reshape(n, -1)` | `-1` = « calcule pour moi » |
-| `torch.cat([a, b], dim=0)` | concatène le long d'une dimension existante |
-| `torch.stack([a, b])` | empile le long d'une **nouvelle** dimension |
+| Commande                                | Effet                                             |
+| --------------------------------------- | ------------------------------------------------- |
+| `x.unsqueeze(0)`                      | ajoute une dimension de taille 1 en position 0    |
+| `x.squeeze()`                         | supprime les dimensions de taille 1               |
+| `x.reshape(2, 6)` ou `x.view(2, 6)` | change la forme (même nombre d'éléments)       |
+| `x.reshape(-1)`                       | aplatit en vecteur                                |
+| `x.reshape(n, -1)`                    | `-1` = « calcule pour moi »                   |
+| `torch.cat([a, b], dim=0)`            | concatène le long d'une dimension existante      |
+| `torch.stack([a, b])`                 | empile le long d'une **nouvelle** dimension |
 
 ### Gradient et autograd
 
-| Commande | Effet |
-|---|---|
-| `torch.tensor(1., requires_grad=True)` | active le suivi du gradient |
-| `a.requires_grad = True` | idem sur un tensor existant |
-| `L.backward()` | calcule les gradients (`L` doit être un scalaire) |
-| `a.grad` | gradient accumulé (même forme que `a`) |
-| `a.grad.zero_()` | remet le gradient à 0 |
-| `a.data` / `a.detach()` | valeur sans le graphe |
-| `with torch.no_grad(): ...` | coupe le suivi du gradient (mises à jour, évaluation) |
+| Commande                                 | Effet                                                   |
+| ---------------------------------------- | ------------------------------------------------------- |
+| `torch.tensor(1., requires_grad=True)` | active le suivi du gradient                             |
+| `a.requires_grad = True`               | idem sur un tensor existant                             |
+| `L.backward()`                         | calcule les gradients (`L` doit être un scalaire)    |
+| `a.grad`                               | gradient accumulé (même forme que `a`)              |
+| `a.grad.zero_()`                       | remet le gradient à 0                                  |
+| `a.data` / `a.detach()`              | valeur sans le graphe                                   |
+| `with torch.no_grad(): ...`            | coupe le suivi du gradient (mises à jour, évaluation) |
 
 ### Passage entre NumPy et PyTorch
 
@@ -679,14 +720,14 @@ for it in range(N_IT):
 
 ### Les erreurs classiques
 
-| Symptôme | Cause probable |
-|---|---|
-| Résultat de coût absurde, sans erreur | broadcasting involontaire : vérifier `shape` (`(n,)` vs `(n,1)`) |
-| `RuntimeError: ... expected ... float ... got ... double` | mélange de types : imposer `dtype=torch.float` |
-| `grad can be implicitly created only for scalar outputs` | `backward()` appelé sur un non-scalaire : faire `.mean()` ou `.sum()` |
-| `Trying to backward through the graph a second time` | graphe déjà libéré : recalculer le forward avant un nouveau `backward()` |
-| Modification d'un paramètre refusée | oubli de `with torch.no_grad():` lors de la mise à jour |
-| Apprentissage qui diverge ou stagne | `EPS` mal choisi, gradients non remis à zéro, données non normalisées |
+| Symptôme                                                   | Cause probable                                                                 |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Résultat de coût absurde, sans erreur                     | broadcasting involontaire : vérifier `shape` (`(n,)` vs `(n,1)`)        |
+| `RuntimeError: ... expected ... float ... got ... double` | mélange de types : imposer `dtype=torch.float`                              |
+| `grad can be implicitly created only for scalar outputs`  | `backward()` appelé sur un non-scalaire : faire `.mean()` ou `.sum()`   |
+| `Trying to backward through the graph a second time`      | graphe déjà libéré : recalculer le forward avant un nouveau `backward()` |
+| Modification d'un paramètre refusée                       | oubli de `with torch.no_grad():` lors de la mise à jour                     |
+| Apprentissage qui diverge ou stagne                         | `EPS` mal choisi, gradients non remis à zéro, données non normalisées    |
 
 ---
 
