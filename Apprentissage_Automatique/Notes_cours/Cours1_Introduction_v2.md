@@ -1,4 +1,6 @@
-# <p style="text-align: center;">Introduction à l'Apprentissage Automatique</p>
+    
+
+# 
 
 *Cours d'Antoine Cornuéjols (AgroParisTech – INRAe MIA Paris-Saclay, EKINOCS research group)*
 
@@ -292,11 +294,11 @@ Un agent dispose d'un canal de perception, d'un canal de récompense, et d'un ca
 **Exemple de tableau de données** — chaque ligne est un exemple/instance, chaque colonne (sauf la dernière) est un descripteur/attribut (*feature*), la dernière colonne est l'étiquette/label :
 
 | Identifiant | Genre | Age | Niveau études | Marié ? | Nb enfants | Revenu | Profession | À prospecter ? |
-|---|---|---|---|---|---|---|---|---|
-| I_21 | M | 43 | Bac+5 | Oui | 3 | 55 000 | Architecte | OUI |
-| I_34 | M | 25 | Bac+2 | Non | 0 | 21 000 | Infirmier | NON |
-| I_38 | F | 34 | Bac+8 | Oui | 2 | 35 000 | Chercheuse | OUI |
-| I_39 | F | 67 | Bac | Oui | 5 | 20 000 | Retraitée | NON |
+| ----------- | ----- | --- | -------------- | -------- | ---------- | ------ | ---------- | --------------- |
+| I_21        | M     | 43  | Bac+5          | Oui      | 3          | 55 000 | Architecte | OUI             |
+| I_34        | M     | 25  | Bac+2          | Non      | 0          | 21 000 | Infirmier  | NON             |
+| I_38        | F     | 34  | Bac+8          | Oui      | 2          | 35 000 | Chercheuse | OUI             |
+| I_39        | F     | 67  | Bac            | Oui      | 5          | 20 000 | Retraitée | NON             |
 
 **Types de données rencontrées :** vectorielles, séquences, structurées, temporelles, spatiales.
 
@@ -375,7 +377,8 @@ Autrement dit : on ne peut garantir le succès que « là où la lumière porte 
 
 ### Les trois ingrédients de l'apprentissage artificiel
 
-Ce sont 3 choses que tu vas voir forcément dans les articles.  
+Ce sont 3 choses que tu vas voir forcément dans les articles.
+
 1. **Le choix de l'espace des hypothèses H** : en général H ≠ F (F étant l'espace de toutes les fonctions possibles).
 2. **Le critère inductif** : comment évaluer chaque hypothèse en fonction de l'échantillon S.
 3. **La méthode d'exploration de H** : comment trouver une bonne (voire optimale) hypothèse dans cet espace.
@@ -399,6 +402,7 @@ L'idée centrale de l'apprentissage statistique est d'utiliser le risque empiriq
 ### L'apprentissage supervisé vu comme une recherche dans un espace
 
 Une autre façon de voir l'apprentissage supervisé est de le considérer comme un jeu entre deux espaces :
+
 - l'**espace des exemples** X, dans lequel se trouve le concept cible (la vraie frontière qu'on cherche à retrouver, inconnue) ;
 - l'**espace des hypothèses** H, dans lequel l'algorithme explore les hypothèses candidates pour essayer d'approcher ce concept cible.
 
@@ -409,6 +413,7 @@ Apprendre revient donc à **chercher**, dans l'espace H, l'hypothèse qui approx
 L'observation clé de cette partie est que l'espace des hypothèses H n'est pas une simple liste désordonnée : il est **structuré** par une relation de généralité, elle-même induite par la relation d'inclusion dans l'espace des exemples X. Concrètement, une hypothèse h₁ est dite **plus générale** qu'une hypothèse h₂ si l'ensemble des exemples couverts par h₁ inclut l'ensemble des exemples couverts par h₂ (h₁ "couvre" plus de cas que h₂). Cette relation définit un **ordre partiel** sur H : on peut se représenter H comme un treillis (un "diamant"), avec les hypothèses les plus générales en haut (celle qui couvre tout, notée ⊤) et les plus spécifiques en bas (celle qui ne couvre rien, notée ⊥).
 
 Pour qualifier une hypothèse par rapport aux exemples d'apprentissage, on utilise ce vocabulaire :
+
 - une hypothèse est **complète** si elle couvre bien tous les exemples positifs ;
 - une hypothèse est **correcte** si elle ne couvre aucun exemple négatif ;
 - une hypothèse **complète ET correcte** est dite **consistante** (ou cohérente) avec les données : c'est exactement ce qu'on cherche.
@@ -416,6 +421,7 @@ Pour qualifier une hypothèse par rapport aux exemples d'apprentissage, on utili
 ### Les opérateurs pour explorer H
 
 Puisque H est structuré par cette relation de généralité, on peut le parcourir à l'aide de trois types d'opérateurs :
+
 - la **généralisation** : transforme une description en une description plus générale (ex : supprimer une condition d'une conjonction "ferrari & rouge → chère" devient "ferrari → chère" ; ou ajouter une alternative ; ou étendre l'intervalle de valeurs autorisées pour un descripteur ; ou remonter dans une hiérarchie de valeurs, par exemple "chlore" et "brome" généralisés en "halogène") ;
 - la **spécialisation** : l'opération inverse, qui restreint une description (produit une description plus contrainte, donc une conséquence logique de la description initiale) ;
 - la **reformulation** : transforme une description en une nouvelle description logiquement équivalente (sans la rendre ni plus générale ni plus spécifique).
@@ -440,10 +446,12 @@ L'idée de l'algorithme est de maintenir à jour S et G au fur et à mesure que 
 **Pour chaque nouvel exemple (positif ou négatif), on met à jour S et G :**
 
 *Mise à jour de S (la frontière spécifique) :*
+
 - si l'exemple est **négatif** : on élimine de S les hypothèses qui couvrent (à tort) cet exemple négatif ;
 - si l'exemple est **positif** : on généralise **le moins possible** (minimalement) les hypothèses de S qui ne couvrent pas encore cet exemple, pour qu'elles le couvrent désormais ; puis on élimine de S les hypothèses qui couvriraient un exemple négatif déjà vu, et/ou celles qui seraient devenues plus générales qu'une autre hypothèse de S.
 
 *Mise à jour de G (la frontière générale) :*
+
 - si l'exemple est **positif** : on élimine de G les hypothèses qui ne couvrent pas cet exemple ;
 - si l'exemple est **négatif** : on spécialise **le moins possible** (minimalement) les hypothèses de G qui couvrent (à tort) cet exemple négatif, pour qu'elles ne le couvrent plus ; puis on élimine de G les hypothèses qui ne seraient plus plus-générales qu'au moins une hypothèse de S, et/ou celles qui seraient devenues plus spécifiques qu'une autre hypothèse de G.
 
@@ -456,6 +464,7 @@ Voici l'exemple classique donné en exercice pour illustrer l'algorithme (à ne 
 ciel × AirTemp × Humidité × Vent × Eau × Prévision
 
 avec :
+
 - ciel → soleil, nuage, pluie
 - AirTemp → chaud, froid
 - humidité → normal, élevé
@@ -467,40 +476,41 @@ Petite remarque sur la taille de l'espace des hypothèses : si on autorisait n'i
 
 **Déroulé de l'algorithme :**
 
-*Exemple 1 (+) : Soleil × chaud × normal × Fort × chaude × égale*  
-S1 = {(Soleil × chaud × normal × Fort × chaude × égale)} 
-— on initialise S avec l'exemple positif lui-même (hypothèse la plus spécifique possible).  
-G1 = {(? × ? × ? × ? × ? × ?)}  
+*Exemple 1 (+) : Soleil × chaud × normal × Fort × chaude × égale*
+S1 = {(Soleil × chaud × normal × Fort × chaude × égale)}
+— on initialise S avec l'exemple positif lui-même (hypothèse la plus spécifique possible).
+G1 = {(? × ? × ? × ? × ? × ?)}
  — G reste l'hypothèse la plus générale, puisqu'elle couvre déjà cet exemple positif.
 
-*Exemple 2 (+) : Soleil × chaud × élevé × Fort × chaude × égale*  
-S2 = {(Soleil × chaud × ? × Fort × chaude × égale)}   
-— seul l'attribut Humidité diffère entre S1 et ce nouvel exemple positif (normal vs élevé) ; on généralise minimalement uniquement cet attribut en "?".  
-G2 = {(? × ? × ? × ? × ? × ?)}   
+*Exemple 2 (+) : Soleil × chaud × élevé × Fort × chaude × égale*
+S2 = {(Soleil × chaud × ? × Fort × chaude × égale)}
+— seul l'attribut Humidité diffère entre S1 et ce nouvel exemple positif (normal vs élevé) ; on généralise minimalement uniquement cet attribut en "?".
+G2 = {(? × ? × ? × ? × ? × ?)}
 — inchangé, un exemple positif ne remet pas en cause G tant qu'il est couvert.
 
-*Exemple 3 (−) : Pluie × froid × élevé × Fort × chaude × change*  
-S3 = S2 = {(Soleil × chaud × ? × Fort × chaude × égale)}  
-— cet exemple négatif n'est de toute façon pas couvert par S2 (Soleil ≠ Pluie), donc S ne bouge pas.  
-G3 = {(Soleil × ? × ? × ? × ? × ?), (? × chaud × ? × ? × ? × ?), (? × ? × ? × ? × ? × égale)}  
+*Exemple 3 (−) : Pluie × froid × élevé × Fort × chaude × change*
+S3 = S2 = {(Soleil × chaud × ? × Fort × chaude × égale)}
+— cet exemple négatif n'est de toute façon pas couvert par S2 (Soleil ≠ Pluie), donc S ne bouge pas.
+G3 = {(Soleil × ? × ? × ? × ? × ?), (? × chaud × ? × ? × ? × ?), (? × ? × ? × ? × ? × égale)}
 — G2 couvrait cet exemple négatif (il couvre tout), il faut donc le spécialiser minimalement. On cherche toutes les façons de fixer UN SEUL attribut pour exclure cet exemple négatif, tout en restant cohérent avec S2 (c'est-à-dire en restant plus général qu'au moins une hypothèse de S) : fixer le ciel à Soleil, OU l'AirTemp à chaud, OU la Prévision à égale — ce sont les 3 seules spécialisations à un seul attribut qui excluent l'exemple 3 tout en restant compatibles avec S2.
 
-*Exemple 4 (+) : Soleil × chaud × élevé × Fort × Fraîche × change*  
-S4 = {(Soleil × chaud × ? × Fort × ? × ?)} 
-— deux attributs diffèrent entre S3 et ce nouvel exemple (Eau : chaude vs fraîche ; Prévision : égale vs change), on les généralise tous les deux minimalement en "?".   
-G4 = {(Soleil × ? × ? × ? × ? × ?), (? × chaud × ? × ? × ? × ?)}  
-— parmi les 3 hypothèses de G3, celle qui fixait la Prévision à "égale" ne couvre plus ce nouvel exemple positif (dont la prévision est "change") : on l'élimine. Les deux autres couvrent bien l'exemple 4, elles sont conservées.  
+*Exemple 4 (+) : Soleil × chaud × élevé × Fort × Fraîche × change*
+S4 = {(Soleil × chaud × ? × Fort × ? × ?)}
+— deux attributs diffèrent entre S3 et ce nouvel exemple (Eau : chaude vs fraîche ; Prévision : égale vs change), on les généralise tous les deux minimalement en "?".
+G4 = {(Soleil × ? × ? × ? × ? × ?), (? × chaud × ? × ? × ? × ?)}
+— parmi les 3 hypothèses de G3, celle qui fixait la Prévision à "égale" ne couvre plus ce nouvel exemple positif (dont la prévision est "change") : on l'élimine. Les deux autres couvrent bien l'exemple 4, elles sont conservées.
 
+**Bilan à ce stade (avec ces 4 exemples, le jeu de données classique de cet exercice) :**
 
-**Bilan à ce stade (avec ces 4 exemples, le jeu de données classique de cet exercice) :**  
-- S4 = {(Soleil × chaud × ? × Fort × ? × ?)}  
-- G4 = {(Soleil × ? × ? × ? × ? × ?), (? × chaud × ? × ? × ? × ?)}  
+- S4 = {(Soleil × chaud × ? × Fort × ? × ?)}
+- G4 = {(Soleil × ? × ? × ? × ? × ?), (? × chaud × ? × ? × ? × ?)}
 
 On voit que S4 ≠ G4 : l'algorithme n'a **pas encore convergé**, il reste plusieurs hypothèses possibles dans l'espace des versions (toutes celles qui sont "entre" S4 et G4, plus générales que S4 et plus spécifiques qu'au moins une hypothèse de G4). Pour trancher davantage, il faudrait fournir de nouveaux exemples au système. Si un jour S = G (avec une seule hypothèse commune), l'algorithme a convergé vers une unique hypothèse consistante avec toutes les données observées.
 
 ### Propriétés et questions ouvertes sur l'algorithme
 
 Quelques questions importantes à garder en tête sur cet algorithme :
+
 - il est **incrémental** (on peut lui donner les exemples un par un, sans tout reprendre à zéro) ;
 - quelle est sa **complexité** (en nombre d'hypothèses à maintenir dans S et G) ?
 - comment utiliser le résultat **si la convergence n'a pas lieu** (plusieurs hypothèses restent possibles, comme dans l'exemple du golf ci-dessus) ?
