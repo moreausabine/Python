@@ -1,6 +1,6 @@
 # La Conformal Prediction expliquée pas à pas
 
-> Explication du cours d'Antoine Cornuéjols (AgroParisTech – INRAE, MIA Paris-Saclay).
+> Explication du cours d'Antoine Cornuéjols (AgroParisTech – INRAE, MIA Paris-Sacla y).
 > Objectif : comprendre **l'idée derrière chaque concept**, pas seulement la formule.
 
 ---
@@ -8,17 +8,17 @@
 ## Sommaire
 
 1. [Le problème : pourquoi 90 % de précision ne suffit pas](#1-le-problème)
-2. [Pourquoi le softmax n'est pas une vraie confiance](#2-le-softmax-nest-pas-une-vraie-confiance)
+2. [Pourquoi le softmax n&#39;est pas une vraie confiance](#2-le-softmax-nest-pas-une-vraie-confiance)
 3. [Les approches existantes (deep ensembles) et leurs limites](#3-les-approches-existantes)
-4. [Ce que l'on voudrait : la garantie de couverture](#4-ce-que-lon-voudrait--la-garantie-de-couverture)
-5. [L'idée centrale : regarder le passé](#5-lidée-centrale--regarder-le-passé)
+4. [Ce que l&#39;on voudrait : la garantie de couverture](#4-ce-que-lon-voudrait--la-garantie-de-couverture)
+5. [L&#39;idée centrale : regarder le passé](#5-lidée-centrale--regarder-le-passé)
 6. [Le recette en 3 étapes](#6-la-recette-en-3-étapes)
-7. [Pourquoi `(n+1)` et pas `n` ? L'intuition de la garantie](#7-pourquoi-n1-et-pas-n-)
+7. [Pourquoi `(n+1)` et pas `n` ? L&#39;intuition de la garantie](#7-pourquoi-n1-et-pas-n-)
 8. [Exemple complet pas à pas (chien / tigre / chat)](#8-exemple-complet-chien--tigre--chat)
 9. [Le code Python ligne par ligne](#9-le-code-python-ligne-par-ligne)
-10. [Message à retenir et hypothèse d'échangeabilité](#10-message-à-retenir)
+10. [Message à retenir et hypothèse d&#39;échangeabilité](#10-message-à-retenir)
 11. [Petites erreurs / subtilités dans les slides](#11-subtilités-et-petites-erreurs-dans-les-slides)
-12. [Mini-quiz d'auto-évaluation](#12-mini-quiz)
+12. [Mini-quiz d&#39;auto-évaluation](#12-mini-quiz)
 
 ---
 
@@ -47,6 +47,7 @@ Or le 90 % **ne dit rien sur la fiabilité pour l'entrée courante** (jamais vue
 **Analogie** : imagine un pilote de ligne qui te dit « mon taux de réussite à l'atterrissage est de 90 % ». C'est rassurant en moyenne, mais si ce soir il y a un brouillard épais, tu voudrais surtout savoir à quel point **cet atterrissage-ci** est risqué.
 
 Le médecin a donc besoin :
+
 - de connaître la **vraisemblance des différentes issues possibles**,
 - ou au moins de pouvoir **écarter les issues très improbables**.
 
@@ -70,10 +71,10 @@ softmax(z)_j = exp(z_j) / Σ_k exp(z_k)       pour j = 1, ..., K
 
 Le cours montre l'exemple célèbre de **Goodfellow et al. (2015)** :
 
-| Image | Prédiction | Confiance softmax |
-|---|---|---|
-| Photo de panda | « panda » | 57,7 % |
-| Panda + un bruit imperceptible (× 0,007) | « gibbon » | **99,3 %** |
+| Image                                     | Prédiction  | Confiance softmax |
+| ----------------------------------------- | ------------ | ----------------- |
+| Photo de panda                            | « panda »  | 57,7 %            |
+| Panda + un bruit imperceptible (× 0,007) | « gibbon » | **99,3 %**  |
 
 L'image est visuellement identique pour un humain, et pourtant le réseau devient **quasi certain d'une réponse absurde**.
 
@@ -88,6 +89,7 @@ L'image est visuellement identique pour un humain, et pourtant le réseau devien
 ### Les *deep ensembles* (Lakshminarayanan et al., NeurIPS 2017)
 
 Principe :
+
 - On entraîne **plusieurs réseaux** (sur des sous-échantillons aléatoires, ou sur les mêmes données mais avec des poids initiaux aléatoires différents).
 - Pour une entrée, on regarde la **distribution des prédictions** de tous ces réseaux : si tous s'accordent → confiance élevée ; s'ils divergent → incertitude.
 
@@ -123,13 +125,14 @@ Lecture : « la vraie classe est dans l'ensemble avec une probabilité **au moin
 
 Trois images de « fox squirrel » (écureuil roux) de difficulté croissante :
 
-| Difficulté | Ensemble de prédiction |
-|---|---|
-| Facile (image nette) | `{fox squirrel}` (0,99) → **1 seul élément** |
-| Moyenne | `{fox squirrel, gray fox, bucket, rain barrel}` |
-| Difficile | `{marmot, fox squirrel, mink, weasel, beaver, polecat}` |
+| Difficulté          | Ensemble de prédiction                                   |
+| -------------------- | --------------------------------------------------------- |
+| Facile (image nette) | `{fox squirrel}` (0,99) → **1 seul élément**   |
+| Moyenne              | `{fox squirrel, gray fox, bucket, rain barrel}`         |
+| Difficile            | `{marmot, fox squirrel, mink, weasel, beaver, polecat}` |
 
 **Le point crucial** : la **taille de l'ensemble s'adapte à la difficulté**.
+
 - Image facile → petit ensemble (le modèle est sûr).
 - Image difficile → grand ensemble (le modèle avoue son incertitude).
 
@@ -230,7 +233,7 @@ Alors tu as **n + 1 scores** au total : les `n` de calibration + celui du point 
 Donc :
 
 - La probabilité que le score de test soit **parmi les `k` plus petits** est `k / (n + 1)`.
-- Si on prend `k = ⌈(1 − α)(n + 1)⌉`, alors `k / (n + 1) ≥ 1 − α`. 
+- Si on prend `k = ⌈(1 − α)(n + 1)⌉`, alors `k / (n + 1) ≥ 1 − α`.
 
 Le point de test tombera donc dans la zone « acceptée » avec une probabilité **au moins** `1 − α`. C'est exactement la garantie de couverture. 🎉
 
@@ -325,12 +328,12 @@ Ces slides regroupent les exemples de calibration par vraie classe (3 chiens, 4 
 
 ### 8.5 Ce que montrent tous ces exemples
 
-| Situation | Effet sur l'ensemble de prédiction |
-|---|---|
-| Je veux plus de garantie (α ↓) | Ensemble **plus grand** |
-| Je tolère plus d'erreur (α ↑) | Ensemble **plus petit** (voire vide) |
-| Le modèle est bon sur la calibration | Seuil **élevé** → ensembles petits pour les cas faciles, **vides** pour les cas atypiques |
-| Le modèle est médiocre sur la calibration | Seuil **bas** → ensembles plus grands |
+| Situation                                   | Effet sur l'ensemble de prédiction                                                                      |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Je veux plus de garantie (α ↓)            | Ensemble **plus grand**                                                                            |
+| Je tolère plus d'erreur (α ↑)            | Ensemble **plus petit** (voire vide)                                                               |
+| Le modèle est bon sur la calibration       | Seuil **élevé** → ensembles petits pour les cas faciles, **vides** pour les cas atypiques |
+| Le modèle est médiocre sur la calibration | Seuil **bas** → ensembles plus grands                                                             |
 
 **Idée fondamentale** : la garantie de couverture est **toujours vraie**, quelle que soit la qualité du modèle. Un mauvais modèle donne simplement des ensembles **plus grands** (moins informatifs), mais **jamais des ensembles faux**. La qualité du modèle influence l'**utilité**, pas la **validité**.
 
@@ -396,18 +399,19 @@ Un ensemble de variables aléatoires est **échangeable** si leur loi jointe ne 
 **En pratique**, cela veut dire : *les données de calibration et les données de test doivent venir de la même source*.
 
 Exemples où l'hypothèse est **violée** (donc la garantie tombe) :
+
 - Calibration faite sur des IRM d'un hôpital A, test sur un hôpital B avec un autre scanner.
 - Séries temporelles avec dérive au cours du temps.
 - Données d'été pour la calibration, données d'hiver pour le test.
 
 ### Ce que la conformal prediction n'est PAS
 
-| Idée reçue | Réalité |
-|---|---|
-| « C'est une probabilité que ma prédiction soit juste » | C'est une garantie sur un **ensemble** : `P(y ∈ C(x)) ≥ 1 − α`, en moyenne |
-| « Ça améliore mon modèle » | Non : le modèle n'est pas modifié. On l'habille avec des ensembles calibrés |
-| « Ça marche pour chaque image individuellement » | La garantie est **marginale** (moyenne), pas conditionnelle à `x` ni à la classe |
-| « Un bon modèle est nécessaire pour que ça marche » | Non pour la **validité** ; oui pour l'**utilité** (des ensembles petits) |
+| Idée reçue                                               | Réalité                                                                                  |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| « C'est une probabilité que ma prédiction soit juste » | C'est une garantie sur un **ensemble** : `P(y ∈ C(x)) ≥ 1 − α`, en moyenne     |
+| « Ça améliore mon modèle »                            | Non : le modèle n'est pas modifié. On l'habille avec des ensembles calibrés             |
+| « Ça marche pour chaque image individuellement »        | La garantie est **marginale** (moyenne), pas conditionnelle à `x` ni à la classe |
+| « Un bon modèle est nécessaire pour que ça marche »   | Non pour la **validité** ; oui pour l'**utilité** (des ensembles petits)     |
 
 ---
 
@@ -416,12 +420,10 @@ Exemples où l'hypothèse est **violée** (donc la garantie tombe) :
 En vérifiant les calculs, j'ai remarqué quelques points qui pourraient te perturber :
 
 1. **Slides 13 et 20 (α = 0,5)** : avec `n = 10`, le rang est `⌈5,5⌉ = 6`. La 6ᵉ valeur de la liste triée est 0,25 (slide 13) et 0,50 (slide 20), alors que les slides indiquent `Q = 0,30` et `Q = 0,55`, ce qui correspond à la **5ᵉ** valeur. Petit décalage d'un cran. **Cela ne change pas les ensembles trouvés** dans ces exemples, mais si tu refais le calcul à la main à l'examen, applique bien la règle « k-ième valeur avec `k = ⌈(1−α)(n+1)⌉` ».
+
    - Pour la slide 20 précisément, avec la 6ᵉ valeur (0,50), on aurait `tiger` (0,60 ≥ 0,50) ✔ et `cat` (0,35) ✘, donc toujours `{tiger}`.
-
 2. **Slide 10** : la formule affichée `⌈(1−α)(n+1)⌉ / n` est un **niveau de quantile** (une fraction), alors que sur la slide 11 la même quantité sans le `/n` est un **rang** (un entier). C'est cohérent, mais la notation `q̂` désigne deux choses différentes selon la slide.
-
 3. **Slide 14 (`α = 0,9`)** : la notation `Q₀.₉` renvoie à un niveau de quantile, tandis que la ligne du dessus écrit `q̂₀.₁`. Le rang calculé (`⌈0,1 × 11⌉ = 2`) correspond bien à `1 − α = 0,1`. Rien de faux, mais deux conventions se croisent.
-
 4. **Slide 23 « Possible ? »** : l'histogramme contient des exemples avec des confiances très basses sur la vraie classe (0 à 0,2). La question est : « est-ce possible qu'un modèle soit si peu confiant dans la bonne réponse ? ». Oui, tout à fait : c'est justement ce qu'un modèle mal calibré ou un cas difficile produit, et la méthode gère cela sans hypothèse sur la forme de la distribution.
 
 ---
