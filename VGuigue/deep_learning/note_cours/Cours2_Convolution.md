@@ -11,7 +11,7 @@
 1. [Introduction : les tâches en Computer Vision](#1-introduction--les-tâches-en-computer-vision)
 2. [Pourquoi les MLP ne suffisent pas](#2-pourquoi-les-mlp-ne-suffisent-pas)
 3. [Avant le deep learning : Bag of Visual Words](#3-avant-le-deep-learning--bag-of-visual-words)
-4. [L'idée des réseaux convolutifs](#4-lidée-des-réseaux-convolutifs)
+4. [L&#39;idée des réseaux convolutifs](#4-lidée-des-réseaux-convolutifs)
 5. [La convolution 1D (pour bien comprendre)](#5-la-convolution-1d-pour-bien-comprendre)
 6. [La convolution 2D](#6-la-convolution-2d)
 7. [Le pooling](#7-le-pooling)
@@ -33,16 +33,16 @@
 
 Le **Computer Vision** consiste à faire « comprendre » des images à une machine. Selon ce qu'on veut en tirer, on parle de tâches différentes, qui se distinguent par **la finesse de la réponse attendue** :
 
-| Tâche | Question posée | Sortie |
-|---|---|---|
-| **Classification** (object recognition) | « Qu'y a-t-il dans l'image ? » | Une étiquette (ex. *Chat*) |
-| **Classification + localisation** | « Quoi, et où ? » (un seul objet) | Étiquette + boîte englobante |
-| **Détection d'objets** | « Quels objets, et où ? » (plusieurs) | Liste de (classe, boîte) |
-| **Segmentation sémantique** | « À quelle classe appartient *chaque pixel* ? » | Une image de labels (chat / balle / fond) |
-| **Segmentation d'instances** | Comme ci-dessus, mais en distinguant *chaque individu* | Un masque par objet (chat 1, chat 2…) |
-| **Image captioning** | « Décris l'image » | Une phrase |
-| **Visual Question Answering** | « Combien de balles ? » | Une réponse en texte |
-| **Génération d'images** | « Dessine un chat qui joue avec une balle » | Une image |
+| Tâche                                        | Question posée                                          | Sortie                                    |
+| --------------------------------------------- | -------------------------------------------------------- | ----------------------------------------- |
+| **Classification** (object recognition) | « Qu'y a-t-il dans l'image ? »                         | Une étiquette (ex. *Chat*)             |
+| **Classification + localisation**       | « Quoi, et où ? » (un seul objet)                     | Étiquette + boîte englobante            |
+| **Détection d'objets**                 | « Quels objets, et où ? » (plusieurs)                 | Liste de (classe, boîte)                 |
+| **Segmentation sémantique**            | « À quelle classe appartient *chaque pixel* ? »     | Une image de labels (chat / balle / fond) |
+| **Segmentation d'instances**            | Comme ci-dessus, mais en distinguant *chaque individu* | Un masque par objet (chat 1, chat 2…)    |
+| **Image captioning**                    | « Décris l'image »                                    | Une phrase                                |
+| **Visual Question Answering**           | « Combien de balles ? »                                | Une réponse en texte                     |
+| **Génération d'images**               | « Dessine un chat qui joue avec une balle »            | Une image                                 |
 
 **Repère utile** : en segmentation sémantique, on ne parle pas d'« objets », seulement de *pixels* (deux chats collés = une seule zone « chat »). En segmentation d'instances, on sépare chaque chat.
 
@@ -93,10 +93,10 @@ Image → [Convolution + ReLU → Pooling] → [Convolution + ReLU → Pooling] 
 
 ### Les 3 atouts de la convolution
 
-| Atout | Explication |
-|---|---|
-| **Peu de paramètres** | Un même petit filtre (ex. 3×3 = 9 poids) est réutilisé partout sur l'image : on **partage les poids**. |
-| **Apprentissage des motifs à extraire** | Les valeurs du filtre ne sont pas choisies à la main : elles sont **apprises par rétropropagation**. |
+| Atout                                           | Explication                                                                                                                  |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Peu de paramètres**                    | Un même petit filtre (ex. 3×3 = 9 poids) est réutilisé partout sur l'image : on **partage les poids**.             |
+| **Apprentissage des motifs à extraire**  | Les valeurs du filtre ne sont pas choisies à la main : elles sont **apprises par rétropropagation**.                 |
 | **Agrégation progressive des échelles** | Les premières couches voient de petits détails (contours), les suivantes combinent ces détails en formes, puis en objets. |
 
 ---
@@ -212,11 +212,11 @@ Entrée : (3, H, W)  ──  16 filtres de (3×5×5)  ──►  Sortie : (16, H
 
 **Rôle** : **réduire la dimensionnalité** de la sortie (sous-échantillonnage / *subsampling*), réduire le calcul, et ajouter de l'invariance aux petites translations.
 
-| Type | Opération sur une fenêtre |
-|---|---|
-| **Max Pooling** | on garde le **maximum** (« le motif est-il présent quelque part dans la fenêtre ? ») |
-| **Average Pooling** | on prend la **moyenne** |
-| **Sum Pooling** | on fait la **somme** |
+| Type                      | Opération sur une fenêtre                                                                    |
+| ------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Max Pooling**     | on garde le **maximum** (« le motif est-il présent quelque part dans la fenêtre ? ») |
+| **Average Pooling** | on prend la **moyenne**                                                                  |
+| **Sum Pooling**     | on fait la **somme**                                                                     |
 
 **Exemple du cours** : max pooling avec fenêtre 2×2 et stride 2 :
 
@@ -274,14 +274,14 @@ Entrée 224×224×3, puis des blocs de convolutions 3×3 avec nombre de canaux c
 
 ### Les hyperparamètres d'une convolution (`nn.Conv2d`)
 
-| Paramètre | Signification |
-|---|---|
-| `in_channels` | Nombre de canaux de l'entrée (1 = niveaux de gris, 3 = RGB, ou `out_channels` de la couche précédente) |
-| `out_channels` | Nombre de **filtres** = nombre de cartes de sortie |
-| `kernel_size` | Taille du filtre (3, 5, 7…) |
-| `stride` | Pas de glissement |
-| `padding` | Nombre de pixels (zéros) ajoutés sur chaque bord |
-| `dilation` | Espacement entre les cases du filtre |
+| Paramètre       | Signification                                                                                               |
+| ---------------- | ----------------------------------------------------------------------------------------------------------- |
+| `in_channels`  | Nombre de canaux de l'entrée (1 = niveaux de gris, 3 = RGB, ou `out_channels` de la couche précédente) |
+| `out_channels` | Nombre de **filtres** = nombre de cartes de sortie                                                    |
+| `kernel_size`  | Taille du filtre (3, 5, 7…)                                                                                |
+| `stride`       | Pas de glissement                                                                                           |
+| `padding`      | Nombre de pixels (zéros) ajoutés sur chaque bord                                                          |
+| `dilation`     | Espacement entre les cases du filtre                                                                        |
 
 ### Formule de la taille de sortie (par canal)
 
@@ -293,6 +293,7 @@ $$
 - Avec une **dilatation `D`**, on remplace `K` par `K_eff = D·(K − 1) + 1`.
 
 **Astuces à retenir :**
+
 - `K=3, S=1, P=1` → la taille est **conservée** (« same » padding).
 - `S=2` → la taille est **divisée par ~2**.
 - Pas de padding (`P=0`) → la taille **diminue** de `K − 1`.
@@ -306,6 +307,7 @@ self.pool1 = nn.MaxPool2d(kernel_size=3, stride=1)
 ```
 
 Pour une image 28×28 :
+
 - Conv : (28 − 5 + 0)/1 + 1 = **24** → sortie `(16, 24, 24)`.
 - Pooling : (24 − 3)/1 + 1 = **22** → sortie `(16, 22, 22)`.
 
@@ -315,7 +317,7 @@ $$
 \text{params} = \text{out\_channels} \times (\text{in\_channels} \times K \times K + 1)
 $$
 
-(le « +1 » est le biais de chaque filtre). Ici : 16 × (1×5×5 + 1) = **416 paramètres** — à comparer aux millions d'une couche dense !
+   (le « +1 » est le biais de chaque filtre). Ici : 16 × (1×5×5 + 1) = **416 paramètres** — à comparer aux millions d'une couche dense !
 
 ---
 
@@ -324,6 +326,7 @@ $$
 ### Problème de l'entraînement « from scratch »
 
 Entraîner un réseau de zéro :
+
 - donne de bons descripteurs…
 - mais **demande énormément de données**,
 - et la performance n'est **souvent pas optimale**.
@@ -331,6 +334,7 @@ Entraîner un réseau de zéro :
 ### Solution : réutiliser un réseau pré-entraîné
 
 Un réseau entraîné sur une grande base (ex. **ImageNet**, 1000 classes) a déjà appris des features utiles :
+
 - **couches basses** : contours, couleurs, textures (génériques, réutilisables partout) ;
 - **couches intermédiaires** : formes, parties d'objets ;
 - **couches hautes** : concepts spécifiques à la tâche d'origine.
@@ -339,11 +343,11 @@ Un réseau entraîné sur une grande base (ex. **ImageNet**, 1000 classes) a dé
 
 ### Les stratégies
 
-| Stratégie | Description | Quand ? |
-|---|---|---|
-| **Extracteur de features** | On **gèle** tout le réseau, on **remplace** les couches denses finales par de nouvelles (adaptées à nos classes) et on n'entraîne **que celles-ci** | Peu de données, tâche proche |
-| **Fine-tuning partiel** | On gèle les premières couches, on ré-entraîne les dernières | Données moyennes |
-| **Fine-tuning complet** | On dégèle tout et on entraîne avec un *petit* learning rate | Beaucoup de données, tâche éloignée |
+| Stratégie                       | Description                                                                                                                                                                | Quand ?                                 |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| **Extracteur de features** | On **gèle** tout le réseau, on **remplace** les couches denses finales par de nouvelles (adaptées à nos classes) et on n'entraîne **que celles-ci** | Peu de données, tâche proche          |
+| **Fine-tuning partiel**    | On gèle les premières couches, on ré-entraîne les dernières                                                                                                           | Données moyennes                       |
+| **Fine-tuning complet**    | On dégèle tout et on entraîne avec un *petit* learning rate                                                                                                           | Beaucoup de données, tâche éloignée |
 
 **Questions du cours** : *Combien de couches garder / ré-entraîner ? A-t-on besoin de tout fine-tuner ?*
 
@@ -356,26 +360,33 @@ Si on ré-entraîne trop fort sur la tâche B, les paramètres s'éloignent de l
 ## 11. Les grandes architectures
 
 ### AlexNet (2012) — le déclencheur
+
 - Convolutions 11×11, 5×5, 3×3.
 - **Max-pooling, activations ReLU**.
 - **Dropout** (désactive aléatoirement des neurones → limite le surapprentissage) et **data augmentation** (flips, rotations, recadrages… → plus de variété).
 - A remporté ImageNet 2012 et lancé la révolution du deep learning en vision.
 
 ### VGG — la profondeur par des petits filtres
+
 Principe : **empiler beaucoup de convolutions 3×3**. Deux convolutions 3×3 couvrent un champ réceptif 5×5 avec moins de paramètres, et ajoutent plus de non-linéarités. VGG-16 / VGG-19 (16 / 19 couches). Efficace mais **très gourmand** en paramètres et en calcul.
 
 ### ResNet — les connexions résiduelles
+
 Problème : en rendant un réseau très profond, il devient **plus difficile à entraîner** (gradients qui disparaissent, dégradation).
 Solution : le **skip connection** (flèches courbes sur le schéma) :
 
-$$ y = F(x) + x $$
+$$
+y = F(x) + x
+$$
 
 Le bloc n'apprend que la **correction** `F(x)` à ajouter à l'entrée. Le gradient peut « passer par le raccourci », ce qui permet d'entraîner des réseaux de 50, 101, 152 couches.
 
 ### Comparaison
+
 Le graphique (An Analysis of Deep Neural Network Models for Practical Applications, 2017) compare *précision top-1* et *coût en opérations* : les ResNet / Inception offrent le meilleur compromis ; VGG est précis mais très coûteux ; AlexNet est léger mais moins précis. **Il n'y a pas de meilleur modèle absolu : tout dépend du compromis précision / calcul.**
 
 ### Reconstruction d'image et transfert de style (Gatys et al. 2016)
+
 - On utilise un **CNN pré-entraîné** (discriminatif) comme outil de mesure.
 - Idée : générer une image qui a **le contenu** d'une photo `p` et **le style** d'un tableau `a`.
 - **Contenu** : comparé via les activations des couches profondes.
@@ -406,7 +417,9 @@ Le cours résume les trois grandes familles selon **ce que le réseau doit sorti
 - Modèles : **YOLO, R-CNN, Fast-R-CNN**.
 - **Métrique : IoU (Intersection over Union)** :
 
-$$ \text{IoU} = \frac{\text{aire(intersection)}}{\text{aire(union)}} $$
+$$
+\text{IoU} = \frac{\text{aire(intersection)}}{\text{aire(union)}}
+$$
 
   IoU = 1 → boîtes identiques ; IoU = 0 → aucun recouvrement. On considère souvent une détection correcte si IoU > 0,5.
 
@@ -434,12 +447,12 @@ Idée : appliquer l'architecture **Transformer** (née en NLP) aux images.
 
 **Question du cours : différences / complémentarités avec les CNN ?**
 
-| | CNN | ViT |
-|---|---|---|
-| Biais inductif | Fort (localité, partage de poids, invariance à la translation) | Faible (apprend tout depuis les données) |
-| Champ de vision | Local, grandit avec la profondeur | **Global dès la 1ʳᵉ couche** (self-attention entre tous les patchs) |
-| Données nécessaires | Moins | **Beaucoup** (ou pré-entraînement) |
-| Coût | Linéaire en taille d'image | Quadratique en nombre de patchs |
+|                       | CNN                                                              | ViT                                                                          |
+| --------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Biais inductif        | Fort (localité, partage de poids, invariance à la translation) | Faible (apprend tout depuis les données)                                    |
+| Champ de vision       | Local, grandit avec la profondeur                                | **Global dès la 1ʳᵉ couche** (self-attention entre tous les patchs) |
+| Données nécessaires | Moins                                                            | **Beaucoup** (ou pré-entraînement)                                   |
+| Coût                 | Linéaire en taille d'image                                      | Quadratique en nombre de patchs                                              |
 
 ---
 
@@ -448,6 +461,7 @@ Idée : appliquer l'architecture **Transformer** (née en NLP) aux images.
 Les CNN ne servent pas qu'aux photos : tout signal qu'on peut représenter comme une **image** est candidat. Exemple : **le son**, transformé en **spectrogramme** (axe x = temps, axe y = fréquence, couleur = intensité).
 
 **Exemple : séparation de sources** (isoler la voix de chaque locuteur dans un mélange) :
+
 - **Avant** : problème non supervisé, ICA (analyse en composantes indépendantes), SVD…
 - **Maintenant** : **problème supervisé de classification dans le domaine temps-fréquence** : pour chaque case du spectrogramme, on prédit à quelle source elle appartient (un peu comme une segmentation d'image). Les CNN ont fait de gros progrès sur ce problème ces dernières années.
 
@@ -458,7 +472,9 @@ Les CNN ne servent pas qu'aux photos : tout signal qu'on peut représenter comme
 Un réseau profond est une « boîte noire ». L'**introspection** cherche à comprendre : *quelle région de l'image déclenche la classification ? Quels filtres sont importants ?*
 
 ### Ce que les filtres apprennent
+
 Visualisation (exemple Faces / Cars) : les **filtres deviennent de plus en plus abstraits** :
+
 - couche 1 : bords, orientations, couleurs ;
 - couche 2 : parties (yeux, nez, roues…) → ce sont des **« mots visuels élémentaires »** ;
 - couche 3 : objets entiers (visages, voitures).
@@ -467,12 +483,12 @@ Les couches **conservent l'information topologique** (la structure spatiale).
 
 ### Méthodes d'explication
 
-| Méthode | Principe | Intuition |
-|---|---|---|
-| **Occlusion** | On **masque** une zone de l'image (carré gris) qu'on déplace partout, et on mesure **comment la probabilité de la classe chute** | « Si je cache cette zone et que le modèle se trompe, c'est qu'elle était importante. » (Ex. cacher le museau du Poméranien fait chuter le score.) Simple, mais coûteux (un passage par position). |
-| **Carte de saillance (saliency map)** | On calcule le **gradient de la sortie par rapport à l'image d'entrée** | Les pixels où le gradient est fort sont ceux auxquels la classification est **la plus sensible**. Un seul passage backward. |
-| **Class Activation Map (CAM)** | Avec un **Global Average Pooling (GAP)** avant la couche finale : 1 filtre = 1 feature, pondérée par le poids `w_k` de la classe. On fait une **combinaison linéaire des cartes de features** : `CAM_c = Σ_k w_k^c · f_k` | « Quelles régions ont fait “voter” les filtres pour cette classe ? » On obtient une carte de chaleur des **régions d'intérêt**. |
-| **LIME** (Local Interpretable Model-agnostic Explanations) | 1) découper l'image en **super-pixels** ; 2) **échantillonner** des perturbations (certains super-pixels masqués/allumés) ; 3) **pondérer** chaque échantillon par sa proximité avec l'image d'origine ; 4) apprendre un **modèle linéaire local** ; 5) interpréter les **coefficients** | Même si le modèle est globalement complexe et non linéaire, **localement** il est approximable par un modèle simple et interprétable. « Agnostic » = marche avec n'importe quel modèle. |
+| Méthode                                                         | Principe                                                                                                                                                                                                                                                                                                                         | Intuition                                                                                                                                                                                               |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Occlusion**                                              | On **masque** une zone de l'image (carré gris) qu'on déplace partout, et on mesure **comment la probabilité de la classe chute**                                                                                                                                                                                  | « Si je cache cette zone et que le modèle se trompe, c'est qu'elle était importante. » (Ex. cacher le museau du Poméranien fait chuter le score.) Simple, mais coûteux (un passage par position). |
+| **Carte de saillance (saliency map)**                      | On calcule le **gradient de la sortie par rapport à l'image d'entrée**                                                                                                                                                                                                                                                   | Les pixels où le gradient est fort sont ceux auxquels la classification est **la plus sensible**. Un seul passage backward.                                                                      |
+| **Class Activation Map (CAM)**                             | Avec un **Global Average Pooling (GAP)** avant la couche finale : 1 filtre = 1 feature, pondérée par le poids `w_k` de la classe. On fait une **combinaison linéaire des cartes de features** : `CAM_c = Σ_k w_k^c · f_k`                                                                                   | « Quelles régions ont fait “voter” les filtres pour cette classe ? » On obtient une carte de chaleur des **régions d'intérêt**.                                                           |
+| **LIME** (Local Interpretable Model-agnostic Explanations) | 1) découper l'image en **super-pixels** ; 2) **échantillonner** des perturbations (certains super-pixels masqués/allumés) ; 3) **pondérer** chaque échantillon par sa proximité avec l'image d'origine ; 4) apprendre un **modèle linéaire local** ; 5) interpréter les **coefficients** | Même si le modèle est globalement complexe et non linéaire, **localement** il est approximable par un modèle simple et interprétable. « Agnostic » = marche avec n'importe quel modèle.   |
 
 ---
 
@@ -482,7 +498,9 @@ Les couches **conservent l'information topologique** (la structure spatiale).
 
 **Généralisation** : au lieu de « glisser un filtre sur une grille », on fait **passer des messages** entre voisins :
 
-$$ n_i^{(2)} = \sum_{n_j \in \mathcal{N}(n_i)} \psi(n_i, n_j, e_{ji}) $$
+$$
+n_i^{(2)} = \sum_{n_j \in \mathcal{N}(n_i)} \psi(n_i, n_j, e_{ji})
+$$
 
 - `n_i` : nœud courant ; `n_j` : ses voisins `𝒩(n_i)` ; `e_ji` : l'arête qui relie `j` à `i`.
 - `ψ` : un **réseau de neurones** (ex. PMC / MLP) qui combine les informations. Le nombre de filtres = taille du vecteur de sortie.
@@ -510,10 +528,10 @@ from torchvision import datasets, transforms, models
 
 ### 17.2 Convention des dimensions (à retenir absolument)
 
-| Type | Format PyTorch |
-|---|---|
-| Image 2D (batch) | `(N, C, H, W)` = (batch, canaux, hauteur, largeur) |
-| Signal 1D (batch) | `(N, C, L)` |
+| Type              | Format PyTorch                                       |
+| ----------------- | ---------------------------------------------------- |
+| Image 2D (batch)  | `(N, C, H, W)` = (batch, canaux, hauteur, largeur) |
+| Signal 1D (batch) | `(N, C, L)`                                        |
 
 ```python
 x = torch.randn(8, 3, 224, 224)   # batch de 8 images RGB 224×224
@@ -750,15 +768,15 @@ plt.show()
 
 ### Formules à connaître
 
-| Quoi | Formule |
-|---|---|
-| Taille de sortie (conv ou pooling) | `⌊(W − K + 2P) / S⌋ + 1` |
-| Noyau effectif avec dilatation | `K_eff = D·(K − 1) + 1` |
-| Paramètres d'une conv | `out_ch × (in_ch × K × K + 1)` |
-| Bloc résiduel | `y = F(x) + x` |
-| IoU | `aire(A ∩ B) / aire(A ∪ B)` |
-| CAM | `CAM_c = Σ_k w_k^c · f_k` |
-| Message passing | `n_i^(2) = Σ_{j∈𝒩(i)} ψ(n_i, n_j, e_ji)` |
+| Quoi                               | Formule                                        |
+| ---------------------------------- | ---------------------------------------------- |
+| Taille de sortie (conv ou pooling) | `⌊(W − K + 2P) / S⌋ + 1`                  |
+| Noyau effectif avec dilatation     | `K_eff = D·(K − 1) + 1`                    |
+| Paramètres d'une conv             | `out_ch × (in_ch × K × K + 1)`            |
+| Bloc résiduel                     | `y = F(x) + x`                               |
+| IoU                                | `aire(A ∩ B) / aire(A ∪ B)`                |
+| CAM                                | `CAM_c = Σ_k w_k^c · f_k`                  |
+| Message passing                    | `n_i^(2) = Σ_{j∈𝒩(i)} ψ(n_i, n_j, e_ji)` |
 
 ### Pièges classiques
 
