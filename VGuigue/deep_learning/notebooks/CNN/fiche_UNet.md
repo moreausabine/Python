@@ -1,4 +1,4 @@
-# Fiche : U-Net, que se passe-t-il dans la représentation ?
+# Fiche : U-Net, que se passe-t-il dans la représentation ? 
 
 ## 1. But du notebook
 
@@ -48,11 +48,11 @@ Imports, choix du device (`cuda` / `mps` / `cpu`), `SummaryWriter` TensorBoard (
 2. **B.2 Métriques** : `seg_counts` (à compléter), `edited` (gestionnaire de contexte pour poser les hooks), `evaluate_seg`.
 3. **B.3 Trois architectures** (toutes avec `base=16`) :
 
-   | modèle | description |
-   |---|---|
-   | `unet` | profondeur 3, avec skips |
-   | `noskip` | même réseau, skips coupés (auto-encodeur) |
-   | `shallow` | U-Net de profondeur 1, même largeur |
+   | modèle     | description                                  |
+   | ----------- | -------------------------------------------- |
+   | `unet`    | profondeur 3, avec skips                     |
+   | `noskip`  | même réseau, skips coupés (auto-encodeur) |
+   | `shallow` | U-Net de profondeur 1, même largeur         |
 
    Calcul à la main du champ réceptif théorique (`theoretical_rf`), puis `train` (AdamW + OneCycleLR) ou chargement des poids.
 4. **B.4 Comparaison** : tableau `iou_fg` / `acc_cls` et visualisation (`show_batch`).
@@ -113,10 +113,10 @@ Principe du `forward` (le `TODO` de A.2) :
 
 **Champ réceptif théorique** (formule : `r ← r + (k-1)·j`, puis `j ← j·s`) :
 
-| profondeur | pixel du goulot | pixel de sortie |
-|---|---|---|
-| 1 | 14×14 | 18×18 (moins qu'un chiffre de 28×28) |
-| 3 | 68 px (tout le canevas) | plus large |
+| profondeur | pixel du goulot         | pixel de sortie                        |
+| ---------- | ----------------------- | -------------------------------------- |
+| 1          | 14×14                  | 18×18 (moins qu'un chiffre de 28×28) |
+| 3          | 68 px (tout le canevas) | plus large                             |
 
 ## 5. Commandes clés par notion
 
