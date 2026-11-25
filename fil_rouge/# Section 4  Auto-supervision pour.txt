@@ -1,0 +1,78 @@
+# Section 4 : Auto-supervision pour les représentations spectrales
+
+## Diapo 1 : Objectif de la section
+- Passer en revue les techniques auto-supervisées de l'état de l'art
+- Discuter leur applicabilité aux données hyperspectrales
+- Établir une première **baseline** de classification pixel par pixel sur Toulouse
+
+## Diapo 2 : Auto-supervisé, le principe
+- **Semi-supervisé classique** : tâche supervisée + tâche auxiliaire non supervisée (souvent la reconstruction par autoencodeur)
+- **Auto-supervisé** : entraînement sur une **tâche prétexte** dont les étiquettes sont générées automatiquement
+- Exemples en vision :
+  - Rotation : prédire la rotation appliquée (0°, 90°, 180°, 270°)
+  - Apprentissage contrastif (SimCLR) : rapprocher les paires positives, éloigner les négatives
+  - Distillation enseignant-élève
+- Point commun : créer des **vues différentes** d'une même donnée par augmentation, en évitant l'**effondrement des représentations**
+
+## Diapo 3 : Pourquoi c'est difficile en hyperspectral
+- En RGB, la variabilité intra-classe vient du contexte spatial (pose, fond)
+- En hyperspectral, elle est **physique, intrinsèque et sémantique** : illumination, chimie des matériaux
+- Les augmentations existantes (distorsions de couleur, miroir spectral) ont peu de chances de préserver le sens
+- Trouver une augmentation fidèle à la physique est difficile, voire impossible
+
+## Diapo 4 : Le choix des auteurs : sans augmentation
+- **Deep Clustering** : des pseudo-étiquettes issues d'un clustering supervisent l'entraînement, de façon itérative
+- **Masked Autoencoder (MAE)** : masquer fortement le spectre et reconstruire les parties manquantes
+- Intérêt du MAE : les signatures à différentes longueurs d'onde (pics d'absorption, inflexions) sont liées à la composition chimique
+
+## Diapo 5 : Architecture du MAE spectral
+- MAE **1D**, spectral uniquement (pas de contexte spatial) : en aéroporté, le spectre est bien plus discriminant que l'espace
+- Le spectre est découpé en petites séquences, dont une grande partie est masquée
+- Un transformer encode les séquences visibles, un décodeur léger reconstruit le spectre
+- Le jeton **[CLS]** sert de représentation du spectre
+- Architecture volontairement simple, proche du MAE original
+
+## Diapo 6 : Protocole expérimental
+- Question : ces représentations aident-elles une classification (tâche aval) ?
+- Comparaison : MAE, autoencodeur classique, données brutes
+- Classifieurs : **KNN** et **Random Forest** sur les représentations
+- Résultats moyens sur les **8 splits spatialement disjoints**
+- Hyperparamètres : recherche aléatoire sur la validation (ablation pour le MAE)
+
+## Diapo 7 : Résultats : le MAE gagne
+
+| Modèle | OA | F1 |
+|---|---|---|
+| KNN (brut) | 0,78 | 0,69 |
+| AE + KNN | 0,82 | 0,73 |
+| MAE + KNN | 0,84 | 0,76 |
+| RF (brut) | 0,75 | 0,65 |
+| AE + RF | 0,81 | 0,73 |
+| **MAE + RF** | **0,85** | **0,77** |
+
+- Gain vs données brutes : **+7 points de F1** (KNN), **+12** (RF)
+- Gain vs autoencodeur : +3 à +4 points de F1
+
+## Diapo 8 : Deep Clustering : un échec
+- Test : un réseau aléatoire (CNN spectral ou dense) suivi d'un classifieur
+- F1 de 0,038 et 0,024, contre **0,024** pour un classifieur au hasard
+- Les convolutions spectrales ne donnent pas l'a priori utile que les convolutions donnent sur les images
+- Les pseudo-étiquettes n'auraient pas de sens sémantique, et Deep Clustering + KNN est bien pire que KNN sur données brutes
+
+## Diapo 9 : Étude d'ablation du MAE
+- **Taux de masquage** : meilleure précision à **0,7-0,8** (compromis entre tâche triviale et trop difficile)
+- **Têtes d'attention** : meilleur quand leur nombre égale la dimension d'embedding (représentation scalaire), car le spectre porte de l'information de bas niveau
+- **Dimension latente** : meilleurs résultats avec **128 et 256**
+
+## Diapo 10 : À retenir
+- Deep Clustering n'est pas adapté au spectre
+- Le MAE 1D apporte un gain net, avec une baseline à **85 % d'OA et 77 % de F1** (MAE + RF)
+- Limites : MAE purement spectral, gains vs AE modestes
+
+---
+
+**Points à vérifier avant de présenter :**
+- La Table 4 de tes notes n'a pas d'écart-type, donc les gains de +3 à +4 points vs l'AE sont à nuancer.
+- Les F1 de validation des figures d'ablation (0,5-0,6) diffèrent de ceux du tableau, et l'article ne dit pas pourquoi.
+
+Je peux aussi te faire la version orale pour chaque diapo, ou le fichier PowerPoint.
